@@ -3,6 +3,7 @@ import { Calendar } from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer";
 
 export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -99,6 +100,7 @@ export default function BookingPage() {
           </div>
         </div>
       </div>
+      <Footer/>
     </>
   );
 }
