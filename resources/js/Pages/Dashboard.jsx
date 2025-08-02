@@ -70,7 +70,7 @@ export default function Dashboard({ section, products }) {
 
             <div className="flex h-screen overflow-hidden">
                 {/* Sidebar */}
-                <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-green-800 text-white transition-transform duration-300 ease-in-out transform p-4 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-[#1e2a1f] text-white transition-transform duration-300 ease-in-out transform p-4 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="mb-4 text-xl font-bold">Admin Panel</div>
                     <nav className="space-y-1">
                         <SidebarLink href="/dashboard/users" label="All Users" icon={UsersIcon} />
@@ -100,7 +100,7 @@ export default function Dashboard({ section, products }) {
                     <div className="fixed inset-0 z-20 bg-black bg-opacity-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
                 )}
 
-                <main className="flex-1 overflow-y-auto bg-gray-100">
+                <main className="flex-1 overflow-y-auto bg-[gray-100]">
                     {renderContent()}
                 </main>
             </div>
@@ -115,7 +115,7 @@ function SidebarLink({ href, label, icon: Icon }) {
     return (
         <Link
             href={href}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${isActive ? 'bg-green-700 text-white' : 'hover:bg-green-700 hover:text-white'
+            className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${isActive ? 'bg-[#3a543c] text-white' : 'hover:bg-[#3a543c] hover:text-white'
                 }`}
         >
             {Icon && <Icon size={18} />}
@@ -129,7 +129,7 @@ function SidebarDropdown({ label, icon: Icon, isOpen, toggle, links }) {
         <div>
             <button
                 onClick={toggle}
-                className="w-full flex items-center justify-between px-4 py-2 rounded-md hover:bg-green-700 transition"
+                className="w-full flex items-center justify-between px-4 py-2 rounded-md hover:bg-[#3a543c] transition"
             >
                 <span className="flex items-center gap-2">
                     {Icon && <Icon size={18} />}
@@ -146,7 +146,7 @@ function SidebarDropdown({ label, icon: Icon, isOpen, toggle, links }) {
                                 href={link.href}
                                 method={link.method}
                                 as="button"
-                                className="w-full text-left px-3 py-2 block text-sm text-white hover:bg-green-700 rounded"
+                                className="w-full text-left px-3 py-2 block text-sm text-white hover:bg-[#3a543c] rounded"
                             >
                                 {link.icon && <link.icon size={14} className="inline-block mr-1" />}
                                 {link.label}
@@ -155,7 +155,7 @@ function SidebarDropdown({ label, icon: Icon, isOpen, toggle, links }) {
                             <Link
                                 key={idx}
                                 href={link.href}
-                                className="block px-3 py-2 text-sm text-white hover:bg-green-700 rounded"
+                                className="block px-3 py-2 text-sm text-white hover:bg-[#3a543c] rounded"
                             >
                                 {link.label}
                             </Link>
