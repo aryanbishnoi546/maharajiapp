@@ -74,14 +74,15 @@ export default function Dashboard({ section, products }) {
                     <div className="mb-4 text-xl font-bold">Admin Panel</div>
                     <nav className="space-y-1">
                         <SidebarLink href="/dashboard/users" label="All Users" icon={UsersIcon} />
-                        <SidebarLink href="/dashboard/transactions" label="Transactions" icon={CreditCard} />
-                        <SidebarLink href="/dashboard/sales" label="Sales" icon={Package} />
-                        <SidebarLink href="/dashboard/products" label="Products" icon={ShoppingCart} />
-                        <SidebarLink href="/dashboard/members" label="Prime Members" icon={ShieldCheck} />
                         <SidebarLink href="/dashboard/Categories" label="Categories" icon={Layers} />
+                        <SidebarLink href="/dashboard/products" label="Products" icon={ShoppingCart} />
+
+                        {/* <SidebarLink href="/dashboard/transactions" label="Transactions" icon={CreditCard} /> */}
+                        {/* <SidebarLink href="/dashboard/sales" label="Sales" icon={Package} /> */}
+                        {/* <SidebarLink href="/dashboard/members" label="Prime Members" icon={ShieldCheck} /> */}
                         <SidebarLink href="/dashboard/orders" label="All Orders" icon={Package} />
 
-                        <SidebarDropdown
+                        {/* <SidebarDropdown
                             label="Settings"
                             icon={SettingsIcon}
                             isOpen={openDropdown === 'settings'}
@@ -92,7 +93,7 @@ export default function Dashboard({ section, products }) {
                                 { label: 'Assign Role', href: '/dashboard/settings?tab=role' },
                                 { label: 'Logout', href: route('logout'), method: 'post', as: 'button', icon: LogOut },
                             ]}
-                        />
+                        /> */}
                     </nav>
                 </aside>
 

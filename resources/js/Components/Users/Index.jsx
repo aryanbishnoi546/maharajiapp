@@ -5,113 +5,102 @@ export default function UserList({ users }) {
     const hasUsers = Array.isArray(userList) && userList.length > 0;
 
     return (
-
-        <div className="overflow-x-auto bg-white rounded shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold text-green-700 underline">All Users</h1>
+        <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-semibold text-green-900 underline">All Users</h1>
                 <button
-                    className="px-5 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-500 text-lg"
+                    className="px-5 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-400 text-sm"
                     onClick={() => router.visit(route('dashboard.users.create'))}
                 >
                     Add New User
                 </button>
             </div>
 
-            <table className="min-w-full table-auto border border-gray-300 rounded overflow-hidden">
-                <thead className="bg-gray-100 text-left">
-                    <tr>
-                        <th className="px-4 py-2 border-b text-green-700">S.No</th>
-                        <th className="px-4 py-2 border-b text-green-700">Image</th>
-                        <th className="px-4 py-2 border-b text-green-700">Name</th>
-                        <th className="px-4 py-2 border-b text-green-700">Email</th>
-                        <th className="px-4 py-2 border-b text-green-700">Phone</th>
-                        <th className="px-4 py-2 border-b text-green-700">Active</th>
-                        <th className="px-4 py-2 border-b text-green-700">Role</th>
-                        <th className="px-4 py-2 border-b text-green-700">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {!hasUsers ? (
+            <div className="overflow-x-auto">
+                <table className="min-w-full text-sm rounded-md overflow-hidden border border-green-100">
+                    <thead className="bg-green-100 text-green-900">
                         <tr>
-                            <td
-                                colSpan="8"
-                                className="text-center py-6 text-gray-500 text-base"
-                            >
-                                No users found.
-                            </td>
+                            <th className="px-4 py-2 text-left">S.No</th>
+                            <th className="px-4 py-2 text-left">Image</th>
+                            <th className="px-4 py-2 text-left">Name</th>
+                            <th className="px-4 py-2 text-left">Email</th>
+                            <th className="px-4 py-2 text-left">Phone</th>
+                            <th className="px-4 py-2 text-left">Active</th>
+                            <th className="px-4 py-2 text-left">Role</th>
+                            <th className="px-4 py-2 text-left">Actions</th>
                         </tr>
-                    ) : (
-                        userList.map((user, index) => (
-                            <tr key={user.id} className="hover:bg-gray-50 text-sm">
-                                <td className="px-4 py-2 border-b">{index + 1}</td>
-                                <td className="px-4 py-2 border-b">
-                                    {user.image ? (
-                                        <img
-                                            src={`/storage/${user.image}`}
-                                            alt={user.name}
-                                            className="w-10 h-10 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white text-sm">
-                                            👤
-                                        </div>
-                                    )}
-                                </td>
-                                <td className="px-4 py-2 border-b">{user.name}</td>
-                                <td className="px-4 py-2 border-b text-gray-700">{user.email}</td>
-                                <td className="px-4 py-2 border-b text-gray-700">
-                                    {user.phone || '-'}
-                                </td>
-                                <td className="px-4 py-2 border-b">
-                                    <label className="inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={user.active}
-                                            onChange={() =>
-                                                router.put(route('users.toggleActive', user.id), {
-                                                    preserveScroll: true,
-                                                })
-                                            }
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-all duration-300 relative">
-                                            <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-full transition-transform duration-300"></div>
-                                        </div>
-                                    </label>
-                                </td>
-                                <td className="px-4 py-2 border-b text-gray-700">
-                                    {user.role || '-'}
-                                </td>
-                                <td className="px-4 py-2 border-b">
-                                    <div className="flex space-x-2">
-                                        <button
-                                            className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                                            onClick={() =>
-                                                router.visit(
-                                                    route('dashboard.users.edit', user.id)
-                                                )
-                                            }
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
-                                            onClick={() =>
-                                                router.delete(
-                                                    route('dashboard.users.destroy', user.id)
-                                                )
-                                            }
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
+                    </thead>
+                    <tbody className="divide-y divide-green-100">
+                        {!hasUsers ? (
+                            <tr>
+                                <td colSpan="8" className="text-center py-6 text-gray-500">
+                                    No users found.
                                 </td>
                             </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+                        ) : (
+                            userList.map((user, index) => (
+                                <tr key={user.id} className="hover:bg-green-50">
+                                    <td className="px-4 py-2">{index + 1}</td>
+                                    <td className="px-4 py-2">
+                                        {user.image ? (
+                                            <img
+                                                src={`/storage/${user.image}`}
+                                                alt={user.name}
+                                                className="w-10 h-10 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 bg-gray-300 text-white flex items-center justify-center rounded-full">
+                                                👤
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-2">{user.name}</td>
+                                    <td className="px-4 py-2 text-gray-700">{user.email}</td>
+                                    <td className="px-4 py-2 text-gray-700">{user.phone || '-'}</td>
+                                    <td className="px-4 py-2">
+                                        <label className="inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={user.active}
+                                                onChange={() =>
+                                                    router.put(route('users.toggleActive', user.id), {
+                                                        preserveScroll: true,
+                                                    })
+                                                }
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-600 relative transition duration-300">
+                                                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-full transition-transform"></div>
+                                            </div>
+                                        </label>
+                                    </td>
+                                    <td className="px-4 py-2 text-gray-800">{user.role || '-'}</td>
+                                    <td className="px-4 py-2">
+                                        <div className="flex space-x-2">
+                                            <button
+                                                className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-400"
+                                                onClick={() =>
+                                                    router.visit(route('dashboard.users.edit', user.id))
+                                                }
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                                                onClick={() =>
+                                                    router.delete(route('dashboard.users.destroy', user.id))
+                                                }
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
 
             {/* Pagination */}
             {hasUsers && (
@@ -120,12 +109,12 @@ export default function UserList({ users }) {
                         <Link
                             key={index}
                             href={link.url || ''}
-                            className={`px-3 py-1 border rounded text-sm transition ${
+                            className={`px-3 py-1 rounded border text-sm transition-all ${
                                 link.active
-                                    ? 'bg-green-600 text-white'
+                                    ? 'bg-green-700 text-white'
                                     : !link.url
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed pointer-events-none'
-                                    : 'bg-white text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-white text-green-700 hover:bg-green-100'
                             }`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />

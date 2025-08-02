@@ -3,6 +3,8 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import EditProduct from './EditProductForm';
 
+// ...Imports and setup remain the same
+
 export default function Products({ products, categories, subcategories }) {
     const [editProduct, setEditProduct] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
@@ -29,36 +31,36 @@ export default function Products({ products, categories, subcategories }) {
 
     return (
         <>
-            <div className="w-full max-w-7xl mx-auto mt-10 px-4 space-y-6">
+            <div className="w-full mx-auto mt-10 px-4 space-y-6">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-semibold text-gray-800">All Products</h1>
+                    <h1 className="text-2xl font-semibold text-green-900 underline">All Products</h1>
                     <button
                         onClick={() => setShowAddForm(true)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md shadow-sm transition"
+                        className="bg-yellow-500 hover:bg-yellow-400 text-white px-5 py-2 rounded-md shadow-sm transition"
                     >
-                        + Add New Product
+                        Add New Product
                     </button>
                 </div>
 
-                <div className="overflow-x-auto bg-white shadow-sm border border-gray-200 rounded-lg">
+                <div className="overflow-x-auto bg-white shadow-md border border-green-100 rounded-lg">
                     <table className="min-w-full text-sm text-left">
-                        <thead className="bg-gray-100 text-gray-700 uppercase">
+                        <thead className="bg-green-100 text-green-900">
                             <tr>
-                                <th className="p-3 border">S.No</th>
-                                <th className="p-3 border">Image</th>
-                                <th className="p-3 border">Category</th>
-                                <th className="p-3 border">Subcategory</th>
-                                <th className="p-3 border">Product</th>
-                                <th className="p-3 border">Discount</th>
-                                <th className="p-3 border">Status</th>
-                                <th className="p-3 border">Actions</th>
+                                <th className="p-3">S.No</th>
+                                <th className="p-3">Image</th>
+                                <th className="p-3">Category</th>
+                                <th className="p-3">Subcategory</th>
+                                <th className="p-3">Product</th>
+                                <th className="p-3">Discount</th>
+                                {/* <th className="p-3">Status</th> */}
+                                <th className="p-3">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-green-100">
                             {products.data.map((product, index) => (
-                                <tr key={product.id} className="hover:bg-gray-50 border-t">
-                                    <td className="p-3 border">{index + 1}</td>
-                                    <td className="p-3 border">
+                                <tr key={product.id} className="hover:bg-green-50">
+                                    <td className="p-3">{index + 1}</td>
+                                    <td className="p-3">
                                         {product.images?.length > 0 ? (
                                             <img
                                                 src={`/storage/${product.images[0]}`}
@@ -69,31 +71,35 @@ export default function Products({ products, categories, subcategories }) {
                                             <span className="text-gray-400">No Image</span>
                                         )}
                                     </td>
-                                    <td className="p-3 border">{getCategoryName(product.category_id)}</td>
-                                    <td className="p-3 border">{getSubcategoryName(product.subcategory_id)}</td>
-                                    <td className="p-3 border">{product.name}</td>
-                                    <td className="p-3 border">
+                                    <td className="p-3">{getCategoryName(product.category_id)}</td>
+                                    <td className="p-3">{getSubcategoryName(product.subcategory_id)}</td>
+                                    <td className="p-3">{product.name}</td>
+                                    <td className="p-3">
                                         {product.discount
                                             ? `${parseFloat(product.discount).toFixed(2)}% OFF`
                                             : '0%'}
                                     </td>
-                                    <td className="p-3 border">
-                                        <span className={`px-2 py-1 text-xs rounded-full ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                    {/* <td className="p-3">
+                                        <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                                            product.status === 'active'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-red-100 text-red-700'
+                                        }`}>
                                             {product.status}
                                         </span>
-                                    </td>
-                                    <td className="p-3 border space-x-2">
+                                    </td> */}
+                                    <td className="p-3">
                                         <button
                                             onClick={() => setEditProduct(product)}
-                                            className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded"
+                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs mr-2"
                                         >
-                                            ✏️ Edit
+                                            Edit
                                         </button>
                                         <button
                                             onClick={() => handleDelete(product.id)}
-                                            className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
                                         >
-                                            🗑️ Delete
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>
@@ -111,12 +117,13 @@ export default function Products({ products, categories, subcategories }) {
                                 disabled={!link.url}
                                 onClick={() => router.visit(link.url)}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`px-3 py-1 text-sm rounded border transition ${link.active
-                                        ? 'bg-green-600 text-white'
+                                className={`px-3 py-1 text-sm rounded border transition ${
+                                    link.active
+                                        ? 'bg-green-700 text-white'
                                         : !link.url
                                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-white hover:bg-gray-100 text-gray-700'
-                                    }`}
+                                            : 'bg-white hover:bg-green-100 text-green-700'
+                                }`}
                             />
                         ))}
                     </div>
