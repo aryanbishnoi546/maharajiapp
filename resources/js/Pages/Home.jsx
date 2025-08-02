@@ -1,10 +1,9 @@
 import Banner from '@/Components/Banner';
-import Footer from '@/Components/Footer';
 import WhyAyurveda from '@/Components/WhyAyurveda';
 import UserLayout from '@/Layouts/UserLayout';
 import { Head} from '@inertiajs/react';
 
-export default function Welcome({ products }) {
+export default function Welcome() {
     return (
         <>
             <Head title="Home" />
@@ -14,7 +13,6 @@ export default function Welcome({ products }) {
                         <div className="relative w-full">
                             <Banner />
                             <WhyAyurveda />
-                            <Footer /> 
                         </div>
                     </div>
                 </div>

@@ -120,13 +120,12 @@ export default function Index({ products, categories, auth }) {
                                 disabled={!link.url}
                                 onClick={() => router.visit(link.url)}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`px-3 py-1 text-sm rounded border ${
-                                    link.active
+                                className={`px-3 py-1 text-sm rounded border ${link.active
                                         ? 'bg-green-600 text-white'
                                         : !link.url
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-white hover:bg-gray-100 text-gray-700'
-                                }`}
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-white hover:bg-gray-100 text-gray-700'
+                                    }`}
                             />
                         ))}
                 </div>

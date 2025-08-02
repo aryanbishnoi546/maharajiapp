@@ -1,4 +1,4 @@
-import { Head,Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import Products from '@/Components/Products';
 import UserLayout from "@/Layouts/UserLayout";
 

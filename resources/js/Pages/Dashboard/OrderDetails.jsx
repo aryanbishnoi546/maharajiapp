@@ -29,7 +29,7 @@ export default function OrderDetails({ order }) {
                             />
                             <div className="space-y-1 text-gray-700">
                                 <p><strong>Name:</strong> {item.product.name}</p>
-                                  <p><strong>Category:</strong> {item.product.category?.name || 'N/A'}</p>
+                                <p><strong>Category:</strong> {item.product.category?.name || 'N/A'}</p>
                                 <p><strong>Subcategory:</strong> {item.product.subcategory?.name || 'N/A'}</p>
                                 <p><strong>Price:</strong> ${item.price}</p>
                                 <p><strong>Description:</strong> {item.product.description}</p>
@@ -64,14 +64,14 @@ export default function OrderDetails({ order }) {
                 </div>
             </div>
 
-                        <div className="text-center mb-6">
-                        <Link
-                        href={route('dashboard.orders')}
-                        className="bg-yellow-600 text-white px-4 py-2 py-1 rounded hover:bg-yellow-500 text-sm inline-block"
-                        >
-                        Back to Orders
-                        </Link>
-                        </div>
+            <div className="text-center mb-6">
+                <Link
+                    href={route('dashboard.orders')}
+                    className="bg-yellow-600 text-white px-4 py-2 py-1 rounded hover:bg-yellow-500 text-sm inline-block"
+                >
+                    Back to Orders
+                </Link>
+            </div>
         </div>
     );
 }

@@ -17,32 +17,32 @@ export default function EditProduct({ product, categories = [], onClose }) {
     const [previewImages, setPreviewImages] = useState([]);
     const [existingImages, setExistingImages] = useState(product.images || []);
 
-  
-const handleSubmit = (e) => {
-    e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('_method', 'put');
-    formData.append('name', data.name);
-    formData.append('price', data.price);
-    formData.append('description', data.description);
-    formData.append('category_id', data.category_id);
-    formData.append('subcategory_id', data.subcategory_id);
-    formData.append('imageAlt', data.imageAlt);
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-    selectedFiles.forEach((file) => {
-        formData.append('images[]', file);
-    });
+        const formData = new FormData();
+        formData.append('_method', 'put');
+        formData.append('name', data.name);
+        formData.append('price', data.price);
+        formData.append('description', data.description);
+        formData.append('category_id', data.category_id);
+        formData.append('subcategory_id', data.subcategory_id);
+        formData.append('imageAlt', data.imageAlt);
 
-    // ✅ THIS IS CORRECT USAGE
-    router.post(route('products.update', product.id), formData, {
-        preserveScroll: true,
-        onSuccess: () => {
-            console.log("Product updated successfully");
-            onClose();
-        },
-    });
-};
+        selectedFiles.forEach((file) => {
+            formData.append('images[]', file);
+        });
+
+        // ✅ THIS IS CORRECT USAGE
+        router.post(route('products.update', product.id), formData, {
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log("Product updated successfully");
+                onClose();
+            },
+        });
+    };
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">

@@ -28,7 +28,6 @@ const ChatApp = () => {
         ))}
       </div>
 
-      {/* ✅ This is critical: make sure you're passing sendMessage */}
       <ChatInput onSend={sendMessage} />
     </div>
   );

@@ -29,14 +29,13 @@ export default function Dashboard({ section, products }) {
     const [openDropdown, setOpenDropdown] = useState(null);
     const { users, categories, order, url } = usePage().props;
 
-   useEffect(() => {
-    if (url && url.startsWith('/dashboard/settings')) {
-        setOpenDropdown('settings');
-    } else {
-        setOpenDropdown(null);
-    }
-}, [url]);
-
+    useEffect(() => {
+        if (url && url.startsWith('/dashboard/settings')) {
+            setOpenDropdown('settings');
+        } else {
+            setOpenDropdown(null);
+        }
+    }, [url]);
 
     const renderContent = () => {
         switch (section) {
@@ -59,7 +58,6 @@ export default function Dashboard({ section, products }) {
         <AuthenticatedLayout>
             <Head title="Dashboard" />
 
-            {/* Mobile Header */}
             <div className="lg:hidden bg-white px-4 py-3 shadow-md flex justify-between items-center">
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -98,12 +96,10 @@ export default function Dashboard({ section, products }) {
                     </nav>
                 </aside>
 
-                {/* Mobile Overlay */}
                 {sidebarOpen && (
                     <div className="fixed inset-0 z-20 bg-black bg-opacity-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
                 )}
 
-                {/* Main Content */}
                 <main className="flex-1 overflow-y-auto bg-gray-100">
                     {renderContent()}
                 </main>
@@ -119,9 +115,8 @@ function SidebarLink({ href, label, icon: Icon }) {
     return (
         <Link
             href={href}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
-                isActive ? 'bg-green-700 text-white' : 'hover:bg-green-700 hover:text-white'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${isActive ? 'bg-green-700 text-white' : 'hover:bg-green-700 hover:text-white'
+                }`}
         >
             {Icon && <Icon size={18} />}
             {label}

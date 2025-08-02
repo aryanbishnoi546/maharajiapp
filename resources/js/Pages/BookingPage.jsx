@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Calendar } from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Footer from "@/Components/Footer";
 import Navbar from "@/Components/Navbar";
 
 export default function BookingPage() {
@@ -24,91 +23,82 @@ export default function BookingPage() {
 
   return (
     <>
-    <Navbar/>
-    <div className="bg-[#393c30] text-[#fce0d9]  py-10 font-sans">
-      <div className="max-w-6xl mx-auto">
-        {/* Back */}
-        <button className="text-sm mb-6 flex items-center gap-1">
-          <ChevronLeft size={18} /> Back
-        </button>
+      <Navbar />
+      <div className="bg-[#393c30] text-[#fce0d9]  py-10 font-sans">
+        <div className="max-w-6xl mx-auto">
+          <button className="text-sm mb-6 flex items-center gap-1">
+            <ChevronLeft size={18} /> Back
+          </button>
 
-        {/* Header */}
-        <h1 className="text-3xl font-semibold mb-1">Schedule your service</h1>
-        <p className="text-sm text-[#ccc] mb-10">
-          Check out our availability and book the date and time that works for you
-        </p>
+          <h1 className="text-3xl font-semibold mb-1">Schedule your service</h1>
+          <p className="text-sm text-[#ccc] mb-10">
+            Check out our availability and book the date and time that works for you
+          </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Calendar */}
-            <div>
-              <h2 className="text-sm uppercase font-semibold mb-2">
-                Select a Date and Time
-              </h2>
-              <div className="bg-white rounded-xl p-4 max-w-sm">
-                <Calendar
-                  onChange={setSelectedDate}
-                  value={selectedDate}
-                  className="text-black"
-                  nextLabel={<ChevronRight size={18} />}
-                  prevLabel={<ChevronLeft size={18} />}
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <div>
+                <h2 className="text-sm uppercase font-semibold mb-2">
+                  Select a Date and Time
+                </h2>
+                <div className="bg-white rounded-xl p-4 max-w-sm">
+                  <Calendar
+                    onChange={setSelectedDate}
+                    value={selectedDate}
+                    className="text-black"
+                    nextLabel={<ChevronRight size={18} />}
+                    prevLabel={<ChevronLeft size={18} />}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm mt-2 mb-3 text-[#ccc]">
+                  Availability for {formatDate(selectedDate)}
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {times.map((time) => (
+                    <button
+                      key={time}
+                      onClick={() => setSelectedTime(time)}
+                      className={`py-2 px-4 rounded border text-sm transition font-medium ${selectedTime === time
+                          ? "bg-[#fce0d9] text-black"
+                          : "bg-transparent border-[#666] text-[#fce0d9]"
+                        } hover:bg-[#fce0d9] hover:text-black`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-3">
+                  <button className="text-sm underline hover:text-white">
+                    Show all sessions
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* Time slots */}
             <div>
-              <p className="text-sm mt-2 mb-3 text-[#ccc]">
-                Availability for {formatDate(selectedDate)}
-              </p>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {times.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={`py-2 px-4 rounded border text-sm transition font-medium ${
-                      selectedTime === time
-                        ? "bg-[#fce0d9] text-black"
-                        : "bg-transparent border-[#666] text-[#fce0d9]"
-                    } hover:bg-[#fce0d9] hover:text-black`}
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-3">
-                <button className="text-sm underline hover:text-white">
-                  Show all sessions
+              <h3 className="text-sm uppercase font-semibold mb-2">
+                Service Details
+              </h3>
+              <div className="bg-[#2e3027] border border-[#444] p-4 rounded-xl space-y-4">
+                <p className="text-base">Video Consultation</p>
+                <details className="text-sm text-[#ccc]">
+                  <summary className="cursor-pointer">More details</summary>
+                  <p className="mt-2">
+                    30-minute consultation via Zoom or Google Meet.
+                  </p>
+                </details>
+                <button className="w-full bg-[#fce0d9] text-black py-2 rounded hover:bg-[#ffcabd] transition">
+                  Next
                 </button>
               </div>
             </div>
           </div>
-
-          {/* Right Column - Service Details */}
-          <div>
-            <h3 className="text-sm uppercase font-semibold mb-2">
-              Service Details
-            </h3>
-            <div className="bg-[#2e3027] border border-[#444] p-4 rounded-xl space-y-4">
-              <p className="text-base">Video Consultation</p>
-              <details className="text-sm text-[#ccc]">
-                <summary className="cursor-pointer">More details</summary>
-                <p className="mt-2">
-                  30-minute consultation via Zoom or Google Meet.
-                </p>
-              </details>
-              <button className="w-full bg-[#fce0d9] text-black py-2 rounded hover:bg-[#ffcabd] transition">
-                Next
-              </button>
-            </div>
-          </div>
         </div>
       </div>
-
-    </div>
     </>
   );
 }

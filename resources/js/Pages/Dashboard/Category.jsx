@@ -31,7 +31,7 @@ export default function Index({ categories }) {
     const handleCategorySubmit = (e) => {
         e.preventDefault();
         postCategory(route('admin.categories.store'), {
-           onSuccess: () => setCategoryData('name', '')
+            onSuccess: () => setCategoryData('name', '')
         });
     };
 
@@ -39,8 +39,8 @@ export default function Index({ categories }) {
         e.preventDefault();
         postSubcategory(route('admin.subcategories.store'), {
             onSuccess: () => {
-            setSubcategoryData('name', '');
-            setSubcategoryData('category_id', '')
+                setSubcategoryData('name', '');
+                setSubcategoryData('category_id', '')
             }
         });
     };

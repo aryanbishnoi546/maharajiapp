@@ -1,4 +1,3 @@
-import { StarIcon } from '@heroicons/react/20/solid';
 import { Head, usePage } from '@inertiajs/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -7,9 +6,6 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import UserLayout from '@/Layouts/UserLayout';
 import AddToCartButton from '@/Components/AddToCartButton';
-import Footer from '@/Components/Footer';
-
-
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -104,38 +100,10 @@ export default function SingleProduct() {
                                             {product.price ? `$${product.price}` : 'N/A'}
                                         </p>
 
-
-                                        {/* <div className="mt-6">
-                                            <div className="flex items-center">
-                                                {[0, 1, 2, 3, 4].map((rating) => (
-                                                    <StarIcon
-                                                        key={rating}
-                                                        aria-hidden="true"
-                                                        className={classNames(
-                                                            reviews.average > rating ? 'text-gray-900' : 'text-gray-200',
-                                                            'h-5 w-5 flex-shrink-0'
-                                                        )}
-                                                    />
-                                                ))}
-                                                <a href={reviews.href} className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                                    {reviews.totalCount} reviews
-                                                </a>
-                                            </div>
-                                        </div> */}
-
                                         <div className="mt-6">
                                             <p className="text-base text-gray-900">{product.description || 'No description'}</p>
                                         </div>
                                     </div>
-
-                                    {/* <form className="mt-10">
-                                    <button
-                                        type="submit"
-                                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    >
-                                        Add to bag
-                                    </button>
-                                </form> */}
                                     <div className="mt-10">
                                         <AddToCartButton productId={product.id} />
                                     </div>
