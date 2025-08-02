@@ -146,7 +146,6 @@ export default function SingleProduct() {
                     </div>
                 </div>
             </UserLayout>
-            <Footer/>
         </>
     );
 }

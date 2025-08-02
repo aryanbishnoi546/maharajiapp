@@ -10,7 +10,6 @@ export default function BestSellers({ products }) {
             <UserLayout>
                 <div >
                    <Products products={products} />
-                    <Footer />
                 </div>
             </UserLayout>
         </>

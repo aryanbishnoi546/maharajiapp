@@ -106,10 +106,7 @@ export default function BookingPage() {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
       </div>
-        <Footer/>
 
     </div>
     </>

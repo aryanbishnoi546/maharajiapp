@@ -10,7 +10,6 @@ export default function OnlineConsultation() {
       <Head title="Online Consultation" />
       <UserLayout>
         <OnlineConsultationContent />
-        <Footer />
       </UserLayout>
     </>
   );
