@@ -72,7 +72,7 @@ export default function CreateUser() {
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>
-                    {errors.role && <div className="text-red-600">{errors.role}</div>}
+                    {errors.role && <p className="text-sm text-red-600 mt-1">{errors.role}</p>}
                 </div>
 
                 <div>

@@ -73,7 +73,7 @@ export default function Index({ categories }) {
                         placeholder="Category name"
                         className="w-[20%] border p-2 mr-2 rounded"
                     />
-                    <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Add</button>
+                    <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition">Add</button>
                     {categoryErrors.name && <div className="text-red-500">{categoryErrors.name}</div>}
                 </form>
 
@@ -97,7 +97,7 @@ export default function Index({ categories }) {
                         placeholder="Subcategory name"
                         className="border w-[20%] p-2 mr-2 rounded"
                     />
-                    <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Add</button>
+                    <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition">Add</button>
                     {subcategoryErrors.name && <div className="text-red-500">{subcategoryErrors.name}</div>}
                 </form>
 

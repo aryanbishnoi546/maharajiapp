@@ -1,30 +1,28 @@
-
-
 import React from 'react';
 import AuthLayout from '@/Layouts/UserLayout';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 export default function Index({ products, categories, auth }) {
-   const [data, setData] = React.useState({
-    category_id: '',
-    subcategory_id: '',
-});
-
+    const [data, setData] = React.useState({
+        category_id: '',
+        subcategory_id: '',
+    });
 
     function handleFilter(e) {
-        setData({ ...data, [e.target.name]: e.target.value });
-        router.get(route('products.index'), { ...data, [e.target.name]: e.target.value }, { preserveState: true });
+        const newData = { ...data, [e.target.name]: e.target.value };
+        setData(newData);
+        router.get(route('products.index'), newData, { preserveState: true });
     }
 
     return (
         <AuthLayout auth={auth}>
             <Head title="All Products" />
-            <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-2xl font-bold">All Products</h1>
+            <div className="w-full max-w-6xl mx-auto mt-10 px-4">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-semibold text-gray-800">All Products</h1>
                     <Link
                         href={route('products.create')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                        className="px-5 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-500 text-lg"
                     >
                         Create Product
                     </Link>
@@ -36,62 +34,63 @@ export default function Index({ products, categories, auth }) {
                         name="category_id"
                         value={data.category_id}
                         onChange={handleFilter}
-                        className="border px-3 py-2 rounded"
+                        className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-green-500"
                     >
                         <option value="">All Categories</option>
-                        {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.name}
+                            </option>
                         ))}
                     </select>
-                                        
                 </div>
 
                 {/* Product Table */}
-                <div className="overflow-auto">
-                    <table className="w-full table-auto text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="border p-2">Image</th>
-                                <th className="border p-2">Name</th>
-                                <th className="border p-2">Price</th>
-                                <th className="border p-2">Category</th>
-                                <th className="border p-2">User</th>
-                                <th className="border p-2">Actions</th>
+                <div className="overflow-x-auto bg-white shadow-sm border border-gray-200 rounded-lg">
+                    <table className="w-full text-left table-auto border-collapse">
+                        <thead className="bg-gray-50 text-gray-700 text-sm uppercase">
+                            <tr>
+                                <th className="p-3 border">Image</th>
+                                <th className="p-3 border">Name</th>
+                                <th className="p-3 border">Price</th>
+                                <th className="p-3 border">Category</th>
+                                <th className="p-3 border">User</th>
+                                <th className="p-3 border">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {products.data.map(product => (
-                                <tr key={product.id}>
-                                     <td className="border p-2">
-    {product.images && product.images.length > 0 ? (
-        <div className="flex gap-2">
-            {product.images.slice(0, 3).map((img, idx) => (
-                <img
-                    key={idx}
-                    src={`/storage/${img}`}
-                    alt={product.name}
-                    className="w-12 h-12 object-cover rounded"
-                />
-            ))}
-        </div>
-    ) : (
-        <span>No Image</span>
-    )}
-</td>
-                                    <td className="border p-2">{product.name}</td>
-                                    <td className="border p-2">{product.price}</td>
-                                    <td className="border p-2">{product.category}</td>
-                                    <td className="border p-2">{product.user?.name}</td>
-                                    <td className="border p-2 space-x-2">
+                            {products.data.map((product) => (
+                                <tr key={product.id} className="text-sm hover:bg-gray-50">
+                                    <td className="p-3 border">
+                                        {product.images && product.images.length > 0 ? (
+                                            <div className="flex gap-2">
+                                                {product.images.slice(0, 3).map((img, idx) => (
+                                                    <img
+                                                        key={idx}
+                                                        src={`/storage/${img}`}
+                                                        alt={product.name}
+                                                        className="w-12 h-12 object-cover rounded"
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span className="text-gray-400">No Image</span>
+                                        )}
+                                    </td>
+                                    <td className="p-3 border">{product.name}</td>
+                                    <td className="p-3 border">₹{product.price}</td>
+                                    <td className="p-3 border">{product.category}</td>
+                                    <td className="p-3 border">{product.user?.name}</td>
+                                    <td className="p-3 border space-x-2">
                                         <Link
-        href={route('products.show', product.id)}
-        className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-    >
-        View
-    </Link>
+                                            href={route('products.show', product.id)}
+                                            className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded shadow"
+                                        >
+                                            View
+                                        </Link>
                                         <Link
                                             href={route('products.edit', product.id)}
-                                             className="px-3 py-1 text-sm bg-yellow-400 text-white rounded hover:bg-yellow-500"
+                                            className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1 rounded shadow"
                                         >
                                             Edit
                                         </Link>
@@ -101,7 +100,7 @@ export default function Index({ products, categories, auth }) {
                                                     router.delete(route('products.destroy', product.id));
                                                 }
                                             }}
-                                           className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+                                            className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded shadow"
                                         >
                                             Delete
                                         </button>
@@ -113,17 +112,23 @@ export default function Index({ products, categories, auth }) {
                 </div>
 
                 {/* Pagination */}
-                <div className="mt-6 flex justify-center gap-2">
-                    {Array.isArray(products.links) && products.links.map((link, i) => (
-    <button
-        key={i}
-        disabled={!link.url}
-        onClick={() => router.visit(link.url)}
-        dangerouslySetInnerHTML={{ __html: link.label }}
-        className={`px-3 py-1 border rounded ${link.active ? 'bg-blue-600 text-white' : ''}`}
-    />
-))}
-
+                <div className="mt-6 flex justify-center flex-wrap gap-2">
+                    {Array.isArray(products.links) &&
+                        products.links.map((link, i) => (
+                            <button
+                                key={i}
+                                disabled={!link.url}
+                                onClick={() => router.visit(link.url)}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                className={`px-3 py-1 text-sm rounded border ${
+                                    link.active
+                                        ? 'bg-green-600 text-white'
+                                        : !link.url
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-white hover:bg-gray-100 text-gray-700'
+                                }`}
+                            />
+                        ))}
                 </div>
             </div>
         </AuthLayout>

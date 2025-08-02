@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react';
+import { FiShoppingCart } from 'react-icons/fi';
 
 export default function AddToCartButton({ productId }) {
     function handleAddToCart() {
@@ -21,9 +22,11 @@ export default function AddToCartButton({ productId }) {
     return (
         <button
             onClick={handleAddToCart}
-            className="px-4 py-2 text-white bg-blue-600 rounded"
+            className="flex items-center gap-2 px-5 py-3 text-white rounded-full transition duration-300 hover:scale-105 shadow-md"
+            style={{ backgroundColor: 'rgb(44 43 42)' }}
         >
-            Add to Cart
+            <FiShoppingCart className="text-lg" />
+            <span>Add to Cart</span>
         </button>
     );
 }

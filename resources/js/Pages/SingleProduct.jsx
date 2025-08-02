@@ -7,6 +7,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import UserLayout from '@/Layouts/UserLayout';
 import AddToCartButton from '@/Components/AddToCartButton';
+import Footer from '@/Components/Footer';
 
 
 
@@ -145,6 +146,7 @@ export default function SingleProduct() {
                     </div>
                 </div>
             </UserLayout>
+            <Footer/>
         </>
     );
 }

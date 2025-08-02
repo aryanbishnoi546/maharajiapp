@@ -1,54 +1,73 @@
-import { Link,router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
+import AddToCartButton from './AddToCartButton';
 
 export default function Products({ products }) {
     const productList = products?.data || [];
+
     return (
-        <div className="bg-white">
-            <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 lg:py-10">
-                <h2 className="text-2xl font-bold text-gray-900 pb-5">Products</h2>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+        <div className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+                <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+                    Explore Our Ayurvedic Products
+                </h2>
+
+                <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {productList.length > 0 ? (
                         productList.map((product) => (
-                            <Link
+                            <div
                                 key={product.id}
-                                href={`/product/${product.id}`}
-                                className="group"
+                                className="border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition duration-300 bg-white"
                             >
-                                <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-200">
-                                    <img
-                                        alt={product.imageAlt || 'Product image'}
-                                        src={product.images && product.images.length > 0 ? `/storage/${product.images[0]}` : ''}
-                                        className="h-full w-full object-cover object-center group-hover:opacity-75"
-                                        onError={(e) => console.log('Image load error:', e, product.images)}
-                                    />
-                                </div>
-                                <h3 className="mt-4 text-sm text-gray-700">{product.name || 'No name'}</h3>
-                                <p className="mt-1 text-lg font-medium text-gray-900">
-                                    {product.price ? `$${product.price}` : 'N/A'}
-                                </p>
+                                <Link href={`/product/${product.id}`} className="block">
+                                    <div className="aspect-square bg-gray-100 overflow-hidden">
+                                        <img
+                                            src={product.images?.[0] ? `/storage/${product.images[0]}` : '/placeholder.jpg'}
+                                            alt={product.imageAlt || 'Product image'}
+                                            className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
+                                            onError={(e) => {
+                                                e.target.src = '/placeholder.jpg';
+                                            }}
+                                        />
+                                    </div>
 
-                            </Link>
+                                    <div className="p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name || 'Unnamed Product'}</h3>
+                                        <p className="mt-1 text-xl font-bold text-green-700">
+                                            {product.price ? `$${product.price}` : 'N/A'}
+                                        </p>
+                                    </div>
+                                </Link>
+
+                                <div className="p-4 pt-0">
+                                    <AddToCartButton productId={product.id} />
+                                </div>
+                            </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-500">No products found. Check database or logs.</p>
+                        <p className="text-center col-span-full text-gray-500 text-lg">
+                            No products found. Check database or logs.
+                        </p>
                     )}
                 </div>
 
-                {products.data.length > 0 && products.links.length + 2 > 5 && (
-                    <div className="mt-6">
+                {/* Pagination */}
+                {products?.data?.length > 0 && products.links?.length > 3 && (
+                    <div className="mt-10 flex justify-center flex-wrap gap-2">
                         {products.links.map((link, index) => (
                             <button
                                 key={index}
                                 disabled={!link.url}
                                 onClick={() => router.visit(link.url)}
-                                className={`px-3 py-1 rounded mx-1 ${link.active ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                                    }`}
+                                className={`px-4 py-2 text-sm rounded-md transition ${
+                                    link.active
+                                        ? 'bg-green-600 text-white'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                }`}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
                             />
                         ))}
                     </div>
                 )}
-
             </div>
         </div>
     );

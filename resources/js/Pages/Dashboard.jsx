@@ -4,14 +4,24 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Users from './Dashboard/Users';
 import Product from './Dashboard/Products';
-import { usePage } from '@inertiajs/react';
 import EditUser from '@/Components/Users/Edit';
 import CreateUser from '@/Components/Users/CreateUser'; 
 import Category from './Dashboard/Category'; 
 import Orders from './Dashboard/Orders';
 import Settings from './Dashboard/Settings';
-import OrderDetails from './Dashboard/OrderDetails'
+import OrderDetails from './Dashboard/OrderDetails';
 
+// Icons
+import {
+    Users as UsersIcon,
+    CreditCard,
+    Package,
+    ShoppingCart,
+    ShieldCheck,
+    Layers,
+    Settings as SettingsIcon,
+    LogOut,
+} from 'lucide-react';
 
 export default function Dashboard({ section,products }) {
      const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,12 +45,12 @@ export default function Dashboard({ section,products }) {
             case 'edit-user': return <EditUser user={usePage().props.user} />
             case 'transactions': return <div className="p-6">Transactions</div>;
             case 'sales': return <div className="p-6">Sales Content</div>;
-            case 'products':  return <Product products={products} categories={usePage().props.categories} />;;
+            case 'products': return <Product products={products} categories={categories} />;
             case 'members': return <div className="p-6">Prime Members Content</div>;
-          case 'settings':return <Settings admin={usePage().props.admin} users={usePage().props.users} />;
-             case 'Categories': return <Category categories={categories} />;
-             case 'orders': return <Orders orders={usePage().props.orders} />;
-              case 'order-details': return <OrderDetails order={order} />;
+            case 'settings': return <Settings />;
+            case 'Categories': return <Category categories={categories} />;
+            case 'orders': return <Orders orders={usePage().props.orders} />;
+            case 'order-details': return <OrderDetails order={order} />;
             default: return <div className="p-6">You're logged in!</div>;
         }
     };
@@ -48,9 +58,9 @@ export default function Dashboard({ section,products }) {
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
-            {/* Mobile Hamburger Button */}
+
+            {/* Mobile Menu */}
             <div className="lg:hidden bg-white px-4 py-3 shadow-md flex justify-between items-center">
-                <div className="text-xl font-bold text-green-700">MENU</div>
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                     className="text-green-700 focus:outline-none"
@@ -61,10 +71,9 @@ export default function Dashboard({ section,products }) {
 
             <div className="flex h-screen">
                 {/* Sidebar */}
-                <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-gray-200 shadow-md transform lg:relative lg:translate-x-0 transition-transform duration-200 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:flex lg:flex-col`}>
-                    <div className="px-6 py-4 text-xl font-bold text-green-700 border-b lg:block hidden">MENU</div>
-                    <div className="px-6 py-4 lg:hidden flex justify-between items-center border-b">
-                        <span className="text-xl font-bold text-green-700">Menu</span>
+                <aside className={`fixed inset-y-0 left-0 z-30 w-64 backdrop-blur-md bg-green-800/60 shadow-xl transform lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out p-4 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:flex lg:flex-col`}>
+                    <div className="text-white text-xl font-bold mb-4 flex lg:hidden justify-between items-center">
+                        <span>Menu</span>
                         <button onClick={() => setSidebarOpen(false)}>✕</button>
                     </div>
                     <nav className="flex flex-col mt-2">
@@ -110,6 +119,24 @@ export default function Dashboard({ section,products }) {
     </Link>
 </SidebarLink>
 
+                    <nav className="flex flex-col gap-2">
+                        <SidebarLink href="/dashboard/users" label="All Users" icon={UsersIcon} />
+                        <SidebarLink href="/dashboard/transactions" label="Transactions" icon={CreditCard} />
+                        <SidebarLink href="/dashboard/sales" label="Sales" icon={Package} />
+                        <SidebarLink href="/dashboard/products" label="Products" icon={ShoppingCart} />
+                        <SidebarLink href="/dashboard/members" label="Prime Members" icon={ShieldCheck} />
+                        <SidebarLink href="/dashboard/Categories" label="Categories" icon={Layers} />
+                        <SidebarLink href="/dashboard/orders" label="All Orders" icon={Package} />
+                        <SidebarLink
+                            label="Settings"
+                            icon={SettingsIcon}
+                            subLinks={[
+                                { href: '/dashboard/settings?tab=profile', label: 'Update Profile' },
+                                { href: '/dashboard/settings?tab=password', label: 'Change Password' },
+                                { href: '/dashboard/settings?tab=role', label: 'Assign Role' },
+                                { href: route('logout'), label: 'Logout', method: 'post', as: 'button', icon: LogOut },
+                            ]}
+                        />
                     </nav>
                 </aside>
 
@@ -118,7 +145,7 @@ export default function Dashboard({ section,products }) {
                     <div
                         className="fixed inset-0 bg-black bg-opacity-30 z-20 lg:hidden"
                         onClick={() => setSidebarOpen(false)}
-                    ></div>
+                    />
                 )}
 
                 {/* Main Content */}
@@ -130,6 +157,8 @@ export default function Dashboard({ section,products }) {
     );
 }
 
+function SidebarLink({ href, label, icon: Icon, subLinks = [] }) {
+    const [isOpen, setIsOpen] = useState(false);
 
 export function SidebarLink({
     href,
@@ -159,17 +188,31 @@ export function SidebarLink({
 
     if (isDropdown) {
         return (
-            <div className="border-b border-gray-300">
+            <div className="mb-1">
                 <button
-                    className="w-full text-left px-6 py-3 text-green-700 hover:bg-green-100 font-medium flex justify-between items-center"
-                    onClick={handleToggle}
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-white hover:bg-white/10 rounded-xl transition"
                 >
-                    {label}
-                    <span>{isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</span>
+                    <span className="flex items-center gap-2">
+                        {Icon && <Icon size={18} />}
+                        {label}
+                    </span>
+                    <span>{isOpen ? '▲' : '▼'}</span>
                 </button>
                 {isOpen && (
-                    <div className="bg-gray-100">
-                        {children}
+                    <div className="ml-6 mt-1 space-y-1">
+                        {subLinks.map(({ href, label, method, as, icon: SubIcon }) => (
+                            <Link
+                                key={label}
+                                href={href}
+                                method={method}
+                                as={as}
+                                className="flex items-center gap-2 px-3 py-2 text-sm text-white hover:bg-white/10 rounded-md transition"
+                            >
+                                {SubIcon && <SubIcon size={16} />}
+                                {label}
+                            </Link>
+                        ))}
                     </div>
                 )}
             </div>
@@ -177,7 +220,11 @@ export function SidebarLink({
     }
 
     return (
-        <Link href={href} className={linkClasses}>
+        <Link
+            href={href}
+            className="flex items-center gap-2 px-4 py-3 text-white hover:bg-white/10 rounded-xl transition"
+        >
+            {Icon && <Icon size={18} />}
             {label}
         </Link>
     );

@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OnlineConsultationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,9 +45,18 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-Route::get('/best-sellers', function () {
-    return Inertia::render('BestSellers');
+
+Route::get('/vision', function () {
+    return Inertia::render('Vision');
 });
+
+Route::get('/booking', function () {
+    return Inertia::render('BookingPage');
+});
+
+
+Route::get('/book-online', [OnlineConsultationController::class, 'index'])->name('OnlineConsultation.index');
+
 
 // Show edit form
 Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
@@ -55,6 +65,8 @@ Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
 
 Route::get('/productpage', [ProductController::class, 'index']);
+
+Route::get('/best-sellers', [ProductController::class, 'index']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/Categories', [DashboardController::class, 'Category'])->name('dashboard.categories');

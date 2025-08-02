@@ -2,9 +2,9 @@ import { useForm } from '@inertiajs/react';
 
 export default function Edit({ user }) {
     const { data, setData, put, processing, errors } = useForm({
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        name: user.name || '',
+        email: user.email || '',
+        role: user.role || 'user',
     });
 
     const handleSubmit = (e) => {
@@ -13,48 +13,51 @@ export default function Edit({ user }) {
     };
 
     return (
-        <div className="max-w-xl mx-auto p-4 bg-white rounded shadow">
-            <h1 className="text-2xl font-bold mb-4 text-green-700">Edit User</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="w-full max-w-7xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+            <h1 className="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Edit User</h1>
+            <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                    <label className="block font-semibold">Name</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Name</label>
                     <input
                         type="text"
                         value={data.name}
                         onChange={e => setData('name', e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-green-500 focus:outline-none"
                     />
-                    {errors.name && <div className="text-red-600">{errors.name}</div>}
+                    {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
                 </div>
                 <div>
-                    <label className="block font-semibold">Email</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
                     <input
                         type="email"
                         value={data.email}
                         onChange={e => setData('email', e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-green-500 focus:outline-none"
                     />
-                    {errors.email && <div className="text-red-600">{errors.email}</div>}
+                    {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                 </div>
                 <div>
-                    <label className="block font-semibold">Role</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Role</label>
                     <select
                         value={data.role}
                         onChange={e => setData('role', e.target.value)}
-                        className="w-full border px-3 py-2 rounded"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-green-500 focus:outline-none"
                     >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>
-                    {errors.role && <div className="text-red-600">{errors.role}</div>}
+                    {errors.role && <p className="text-sm text-red-600 mt-1">{errors.role}</p>}
                 </div>
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                    Update
-                </button>
+
+                <div className="text-right">
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition duration-200 shadow"
+                    >
+                        {processing ? 'Saving...' : 'Save'}
+                    </button>
+                </div>
             </form>
         </div>
     );

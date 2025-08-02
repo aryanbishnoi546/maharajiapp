@@ -29,7 +29,7 @@ public function index()
     });
 
 
-        return Inertia::render('ProductPage', [
+        return Inertia::render('BestSellers', [
             'products' => $products
         ]);
     }

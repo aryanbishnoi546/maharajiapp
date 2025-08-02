@@ -27,7 +27,7 @@ const ChatInput = ({ onSend }) => {
   />
   <button
     type="submit"
-    className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition"
+    className="bg-black hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition"
   >
     Send
   </button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 // Remove or keep this based on your setup
 // import { X } from 'lucide-react';
 import ChatApp from '@/Pages/ChatApp';
+import { FaWhatsapp, FaComments } from "react-icons/fa";
 
 const FloatingChat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,18 +10,20 @@ const FloatingChat = () => {
   return (
     <>
       {/* Floating Chat Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition duration-300 z-50"
-      >
-        💬
-      </button>
+  
+
+      <div className="fixed bottom-6 right-6">
+        <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 bg-[#f5d6ca] text-[#2f362b] px-6 py-3 rounded-full shadow-md hover:bg-[#f3cbbc] transition">
+          <FaComments className="text-xl" />
+          Let's Chat!
+        </button>
+      </div>
 
       {/* Chat Popup */}
       {isOpen && (
         <div className="fixed bottom-20 right-6 w-80 max-h-[90vh] bg-white shadow-2xl border border-gray-200 rounded-xl z-50 flex flex-col animate-fadeIn">
           {/* Header */}
-          <div className="bg-blue-600 text-white px-4 py-3 rounded-t-xl flex justify-between items-center">
+          <div className="bg-[#2c2b2a] text-white px-4 py-3 rounded-t-xl flex justify-between items-center">
             <span className="font-semibold text-lg">Chat Assistant</span>
             <button
               onClick={() => setIsOpen(false)}
