@@ -1,3 +1,4 @@
+import { Link } from "@inertiajs/react";
 import React from "react";
 
 const OnlineConsultationContent = () => {
@@ -42,17 +43,17 @@ const OnlineConsultationContent = () => {
                 />
                 <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-300 mb-2">{item.desc}</p>
-                <a
+                <Link
                   href="#"
                   className="text-sm underline text-gray-200 hover:text-white"
                 >
                   Read More
-                </a>
+                </Link>
                 <hr className="my-4 border-gray-500" />
                 <p className="mb-4">{item.price}</p>
-                <a href="/booking" className="bg-[#f4cfc4] text-[#3e4236] px-5 py-2 rounded-full hover:bg-white transition">
+                <Link href="/booking" className="bg-[#f4cfc4] text-[#3e4236] px-5 py-2 rounded-full hover:bg-white transition">
                   Book Now
-                </a>
+                </Link>
               </div>
             ))}
           </div>

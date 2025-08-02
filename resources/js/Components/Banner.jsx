@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from '@inertiajs/react';
 
 export default function Banner() {
     return (
@@ -31,18 +32,18 @@ export default function Banner() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                    <a
-                        href="#shop"
+                    <Link
+                        href="/best-sellers"
                         className="bg-white text-black font-semibold px-6 py-3 rounded-full shadow hover:bg-gray-200 transition"
                     >
                         Shop Now
-                    </a>
-                    <a
-                        href="#book"
+                    </Link>
+                    <Link
+                        href="/book-online"
                         className="bg-white text-black font-semibold px-6 py-3 rounded-full shadow hover:bg-gray-200 transition"
                     >
                         Book Your Ayurvedic Journey Now!
-                    </a>
+                    </Link>
                 </div>
             </div>
         </section>

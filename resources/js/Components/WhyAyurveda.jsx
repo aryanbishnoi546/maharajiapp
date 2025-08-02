@@ -1,3 +1,4 @@
+import { Link } from "@inertiajs/react";
 import React from "react";
 
 export default function WhyAyurveda() {
@@ -47,9 +48,9 @@ export default function WhyAyurveda() {
 
                     {/* Learn More Button */}
                     <div className="text-center mt-16">
-                        <button className="px-6 py-3 border border-white text-white rounded-full hover:bg-white hover:text-[#1e2a1f] transition">
+                        <Link href={"/book-online"} className="px-6 py-3 border border-white text-white rounded-full hover:bg-white hover:text-[#1e2a1f] transition">
                             Learn More
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -66,9 +67,9 @@ export default function WhyAyurveda() {
                 <h3 className="text-2xl md:text-3xl font-medium mt-6 mb-8">
                     Your Path to Holistic Wellness Starts Here!
                 </h3>
-                <button className="bg-[#4e554a] text-white px-8 py-4 rounded-full text-lg hover:bg-[#3d433a] transition">
+                <Link href={"/book-online"} className="bg-[#4e554a] text-white px-8 py-4 rounded-full text-lg hover:bg-[#3d433a] transition">
                     Discover Plans
-                </button>
+                </Link>
             </section>
         </>
     );
