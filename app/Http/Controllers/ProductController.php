@@ -12,27 +12,29 @@ class ProductController extends Controller
 {
 
 public function index()
-    {
+{
     $products = Product::with(['category', 'subcategory'])
-    ->latest()
-    ->paginate(5)
-    ->through(function ($product) {
-        return [
-            'id' => $product->id,
-            'name' => $product->name,
-            'price' => $product->price,
-            'imageAlt' => $product->image_alt,
-            'images' => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
-            'category' => $product->category ? $product->category->name : null,
-            'subcategory' => $product->subcategory ? $product->subcategory->name : null,
-        ];
-    });
+        ->where('status', 'active')
+        ->latest()
+        ->paginate(4)
+        ->through(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
+                'status' => $product->status,
+                'imageAlt' => $product->image_alt,
+                'images' => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
+                'category' => $product->category ? $product->category->name : null,
+                'subcategory' => $product->subcategory ? $product->subcategory->name : null,
+            ];
+        });
 
+    return Inertia::render('ProductPage', [
+        'products' => $products
+    ]);
+}
 
-        return Inertia::render('BestSellers', [
-            'products' => $products
-        ]);
-    }
 
     public function show($id)
 {
@@ -77,12 +79,13 @@ public function index()
         'images.*' => 'image|max:2048',
         'category_id' => 'nullable|exists:categories,id',
         'subcategory_id' => 'nullable|exists:subcategories,id',
+        'status' => 'active',
     ]);
 
     $imagePaths = [];
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $image) {
-            $path = $image->store('products', 'public'); 
+            $path = $image->store('products', 'public');
             $imagePaths[] = $path;
         }
     }
@@ -95,7 +98,7 @@ public function index()
         'details' => $validated['details'],
         'reviews_average' => $validated['reviews_average'],
         'reviews_total_count' => $validated['reviews_total_count'],
-        'images' => json_encode($imagePaths), 
+        'images' => json_encode($imagePaths),
         'category_id' => $validated['category_id'] ?? null,
         'subcategory_id' => $validated['subcategory_id'] ?? null,
     ]);
@@ -157,6 +160,46 @@ public function update(Request $request, Product $product)
 
     return redirect()->back()->with('success', 'Product deleted successfully!');
 }
+
+public function toggleStatus(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
+    $product->status = $request->status;
+    $product->save();
+
+    return back()->with('message', 'Status updated');
+}
+
+
+  public function products()
+    {
+        $products = Product::latest()->paginate(4)->through(function ($product) {
+            return [
+                'id'             => $product->id,
+                'name'           => $product->name,
+                'price'          => $product->price,
+                'status'         => $product->status,
+                'category_id'    => $product->category_id,
+                'subcategory_id' => $product->subcategory_id,
+                'description'    => $product->description,
+                'imageAlt'       => $product->image_alt,
+                'images'         => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
+            ];
+        });
+
+        $categories    = Category::with('subcategories')->get();
+        $totalProducts = Product::count();
+
+        return Inertia::render('Dashboard', [
+            'section'       => 'products',
+            'products'      => $products,
+            'categories'    => $categories,
+            'totalProducts' => $totalProducts,
+        ]);
+    }
+
+
+
 
 
 }

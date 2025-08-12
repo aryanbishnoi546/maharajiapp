@@ -22,6 +22,7 @@ class Order extends Model
         'country',
         'payment_method',
         'total_amount',
+        'shipping_fee',
         'status',
     ];
 
@@ -34,6 +35,12 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    public function payment()
+{
+    return $this->hasOne(Payment::class);
+}
+
 
     protected static function booted()
 {

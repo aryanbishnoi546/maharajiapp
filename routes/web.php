@@ -7,15 +7,19 @@ use App\Http\Controllers\CategorySubcategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OnlineConsultationController;
+use App\Http\Controllers\RazorpayController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/shop/categories', [CategoryController::class, 'shop'])->name('category.shop');
+Route::get('/category/{id}', [CategoryController::class, 'show'])->name('category.show');
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -27,10 +31,14 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::post('/dashboard/users', [DashboardController::class, 'store'])->name('dashboard.users.store');
     Route::get('/dashboard/transactions', [DashboardController::class, 'transactions'])->name('dashboard.transactions');
     Route::get('/dashboard/sales', [DashboardController::class, 'sales'])->name('dashboard.sales');
-    Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
+    Route::get('/dashboard/products', [ProductController::class, 'products'])->name('dashboard.products');
     Route::get('/dashboard/members', [DashboardController::class, 'members'])->name('dashboard.members');
     Route::get('/dashboard/settings', [DashboardController::class, 'settings'])->name('dashboard.settings');
     Route::resource('products', ProductController::class);
+    Route::put('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);
+
+    Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
+
 });
 
 Route::middleware('auth')->group(function () {
@@ -45,18 +53,9 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-
-Route::get('/vision', function () {
-    return Inertia::render('Vision');
+Route::get('/best-sellers', function () {
+    return Inertia::render('BestSellers');
 });
-
-Route::get('/booking', function () {
-    return Inertia::render('BookingPage');
-});
-
-
-Route::get('/book-online', [OnlineConsultationController::class, 'index'])->name('OnlineConsultation.index');
-
 
 // Show edit form
 Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
@@ -65,8 +64,6 @@ Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
 
 Route::get('/productpage', [ProductController::class, 'index']);
-
-Route::get('/best-sellers', [ProductController::class, 'index']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/Categories', [DashboardController::class, 'Category'])->name('dashboard.categories');
@@ -92,19 +89,32 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-    Route::match(['get', 'post'], '/checkout/selected', [CartController::class, 'checkoutSelected'])->name('checkout.selected');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-    Route::get('/order/thankyou/{order}', [OrderController::class, 'show'])->name('orders.thankyou');
-    Route::get('/dashboard/orders', [OrderController::class, 'orders'])->name('dashboard.orders');
-    Route::get('/orders/{order}', [OrderController::class, 'adminShow'])->name('orders.adminshow');
-    Route::delete('/dashboard/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
-    Route::put('/users/{user}/toggle-active', [RegisteredUserController::class, 'toggleActive'])->name('users.toggleActive');
-    Route::post('/orders/mass-destroy', [OrderController::class, 'massDestroy'])->name('orders.massDestroy');
-    Route::get('/payment/credit/{order}', [OrderController::class, 'creditPayment'])->name('payment.credit');
-Route::post('/payment/credit/{order}', [OrderController::class, 'processCreditPayment'])->name('payment.credit.process');
+Route::get('/best-sellers', [ProductController::class, 'index']);
 
+Route::get('/paypal/success/{order}', [PayPalController::class, 'success'])->name('paypal.success');
+Route::get('/paypal/cancel/{order}', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
+
+Route::middleware(['auth'])->group(function () {
+    Route::match(['get', 'post'], '/checkout/selected', [CartController::class, 'checkoutSelected'])->name('checkout.selected');
+    Route::put('/users/{user}/toggle-active', [RegisteredUserController::class, 'toggleActive'])->name('users.toggleActive');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders/thankyou/{order}', [OrderController::class, 'show'])->name('orders.thankyou');
+    Route::any('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/payment/razorpay/{order}', [RazorpayController::class, 'retryPayment'])->name('payment.razorpay');
+    Route::post('/payment/razorpay/callback', [RazorpayController::class, 'callback'])->name('payment.razorpay.callback');
+    Route::get('/payment/razorpay/debug', [RazorpayController::class, 'debug'])->name('payment.razorpay.debug');
+    Route::delete('/transactions/{id}', [OrderController::class, 'singledelete'])->name('transactions.singledelete');
+    Route::post('/transactions/mass-delete', [OrderController::class, 'multipleDelete'])->name('transactions.multipleDelete');
+
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/dashboard/orders', [OrderController::class, 'orders'])->name('dashboard.orders');
+        Route::get('/dashboard/orders/{order}', [OrderController::class, 'adminShow'])->name('orders.adminshow');
+        Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+        Route::post('/orders/mass-destroy', [OrderController::class, 'massDestroy'])->name('orders.massDestroy');
+
+    });
 });
 
 Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
@@ -118,5 +128,23 @@ Route::get('/chat', function () {
     return Inertia::render('ChatApp');
 });
 Route::post('/api/chat', [AiChatController::class, 'chat']);
+
+// Route::match(['get', 'post'], '/payment/credit', [PayPalController::class, 'credit'])->name('payment.credit');
+// Route::post('/payment/credit', [PayPalController::class, 'credit'])->name('payment.credit');
+
+Route::get('/check-razorpay', function () {
+    dd(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+});
+
+Route::get('/vision', function () {
+    return Inertia::render('Vision');
+});
+
+Route::get('/booking', function () {
+    return Inertia::render('BookingPage');
+});
+
+Route::get('/book-online', [OnlineConsultationController::class, 'index'])->name('OnlineConsultation.index');
+
 
 require __DIR__ . '/auth.php';
