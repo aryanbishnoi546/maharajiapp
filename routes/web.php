@@ -144,6 +144,26 @@ Route::get('/booking', function () {
     return Inertia::render('BookingPage');
 });
 
+Route::get('/terms', function () {
+    return Inertia::render('TermsPage');
+});
+
+Route::get('/privacy-policy', function () {
+    return Inertia::render('PrivacyPage');
+});
+
+Route::get('/refund-shipping', function () {
+    return Inertia::render('RefundShippingPage');
+});
+
+Route::get('/faqs', function () {
+    return Inertia::render('FaqPage');
+});
+
+Route::get('/404', function () {
+    return Inertia::render('NotFoundPage');
+});
+
 Route::get('/book-online', [OnlineConsultationController::class, 'index'])->name('OnlineConsultation.index');
 
 
