@@ -12,6 +12,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OnlineConsultationController;
 use App\Http\Controllers\RazorpayController;
+use App\Http\Controllers\CouponController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,6 +39,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::put('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);
 
     Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
+    Route::get('/dashboard/coupons', [CouponController::class, 'index'])->name('dashboard.coupons');
+    Route::get('/dashboard/coupon/create', [CouponController::class, 'create'])->name('dashboard.coupons.create');
+    Route::post('/dashboard/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
 
 });
 

@@ -12,7 +12,8 @@ import {
     LogOut,
     ChevronUp,
     ChevronDownIcon,
-    ChevronUpIcon
+    ChevronUpIcon,
+    TicketIcon
 } from 'lucide-react';
 
 import Users from './Dashboard/Users';
@@ -23,8 +24,10 @@ import Category from './Dashboard/Category';
 import Orders from './Dashboard/Orders';
 import Settings from './Dashboard/Settings';
 import OrderDetails from './Dashboard/OrderDetails';
+import Create_coupon from './Dashboard/Coupons/Create_coupon';
+import CouponList from '@/Components/Coupon';
 
-export default function Dashboard({ section, products }) {
+export default function Dashboard({ section, products, coupons }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
     const { users, categories, order, url } = usePage().props;
@@ -40,7 +43,9 @@ export default function Dashboard({ section, products }) {
     const renderContent = () => {
         switch (section) {
             case 'users': return <Users users={users} />;
+        case 'coupon': return <CouponList coupons={coupons} />;
             case 'create': return <CreateUser />;
+            case 'Create_coupon': return <Create_coupon />;
             case 'edit-user': return <EditUser user={usePage().props.user} />;
             case 'transactions': return <div className="p-6">Transactions</div>;
             case 'sales': return <div className="p-6">Sales Content</div>;
@@ -76,24 +81,8 @@ export default function Dashboard({ section, products }) {
                         <SidebarLink href="/dashboard/users" label="All Users" icon={UsersIcon} />
                         <SidebarLink href="/dashboard/Categories" label="Categories" icon={Layers} />
                         <SidebarLink href="/dashboard/products" label="Products" icon={ShoppingCart} />
-
-                        {/* <SidebarLink href="/dashboard/transactions" label="Transactions" icon={CreditCard} /> */}
-                        {/* <SidebarLink href="/dashboard/sales" label="Sales" icon={Package} /> */}
-                        {/* <SidebarLink href="/dashboard/members" label="Prime Members" icon={ShieldCheck} /> */}
                         <SidebarLink href="/dashboard/orders" label="All Orders" icon={Package} />
-
-                        {/* <SidebarDropdown
-                            label="Settings"
-                            icon={SettingsIcon}
-                            isOpen={openDropdown === 'settings'}
-                            toggle={() => setOpenDropdown(openDropdown === 'settings' ? null : 'settings')}
-                            links={[
-                                { label: 'Update Profile', href: '/dashboard/settings?tab=profile' },
-                                { label: 'Change Password', href: '/dashboard/settings?tab=password' },
-                                { label: 'Assign Role', href: '/dashboard/settings?tab=role' },
-                                { label: 'Logout', href: route('logout'), method: 'post', as: 'button', icon: LogOut },
-                            ]}
-                        /> */}
+                        <SidebarLink href="/dashboard/coupons" label="Coupons" icon={TicketIcon} />
                     </nav>
                 </aside>
 
