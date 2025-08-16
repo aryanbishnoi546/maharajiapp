@@ -18,10 +18,12 @@ class CouponController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        return Inertia::render('Dashboard/Coupons/Create_coupon');
-    }
+   public function create()
+{
+    return Inertia::render('Dashboard', [
+        'section' => 'Create_coupon'
+    ]);
+}
 
     public function store(Request $request)
     {
@@ -36,7 +38,7 @@ class CouponController extends Controller
 
         Coupon::create($request->all());
 
-        return redirect()->route('dashboard.coupons')->with('success', 'Coupon created successfully.');
+        return redirect()->route('coupon.index')->with('success', 'Coupon created successfully.');
     }
 
     public function edit(Coupon $coupon)
@@ -59,12 +61,21 @@ class CouponController extends Controller
 
         $coupon->update($request->all());
 
-        return redirect()->route('dashboard.coupons')->with('success', 'Coupon updated successfully.');
+        return redirect()->route('coupon.index')->with('success', 'Coupon updated successfully.');
     }
 
     public function destroy(Coupon $coupon)
     {
         $coupon->delete();
-        return redirect()->route('dashboard.coupons')->with('success', 'Coupon deleted successfully.');
+        return redirect()->back()->with('success', 'Coupon deleted successfully.');
     }
+
+    public function toggleStatus(Coupon $coupon)
+    {
+        $coupon->status = !$coupon->status;
+        $coupon->save();
+
+        return redirect()->back();
+    }
+
 }

@@ -18,7 +18,7 @@ export default function CreateCoupon() {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6  mx-auto">
             <h1 className="text-2xl font-semibold text-green-900 mb-6">Create Coupon</h1>
 
             <form onSubmit={handleSubmit} className="space-y-4">

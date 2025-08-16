@@ -39,10 +39,17 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::put('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus']);
 
     Route::get('/dashboard/products', [DashboardController::class, 'products'])->name('dashboard.products');
-    Route::get('/dashboard/coupons', [CouponController::class, 'index'])->name('dashboard.coupons');
-    Route::get('/dashboard/coupon/create', [CouponController::class, 'create'])->name('dashboard.coupons.create');
-    Route::post('/dashboard/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
 
+   Route::prefix('dashboard')->group(function () {
+        Route::get('/coupons', [CouponController::class, 'index'])->name('coupon.index');
+        Route::get('/coupon/create', [CouponController::class, 'create'])->name('coupon.create');
+         Route::post('/dashboard/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
+    });
+    Route::post('/dashboard/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
+    Route::put('/dashboard/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])
+    ->name('coupons.toggleStatus');
+    Route::put('/dashboard/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus']);
+    Route::delete('/dashboard/coupons/{coupon}/destroy', [CouponController::class, 'destroy'])->name('coupons.destroy');
 });
 
 Route::middleware('auth')->group(function () {
@@ -61,31 +68,21 @@ Route::get('/best-sellers', function () {
     return Inertia::render('BestSellers');
 });
 
-// Show edit form
 Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-
-// Update product (PUT method via Inertia)
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-
 Route::get('/productpage', [ProductController::class, 'index']);
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/Categories', [DashboardController::class, 'Category'])->name('dashboard.categories');
-
     Route::post('/categories-with-subcategory', [CategorySubcategoryController::class, 'storeWithSubcategory'])->name('categories.with.subcategory');
-// Category Routes
-    // Category Routes
     Route::post('/admin/categories', [CategorySubcategoryController::class, 'storeCategory'])->name('admin.categories.store');
     Route::put('/admin/categories/{category}', [CategorySubcategoryController::class, 'updateCategory'])->name('admin.categories.update');
     Route::delete('/admin/categories/{category}', [CategorySubcategoryController::class, 'deleteCategory'])->name('admin.categories.delete');
-    // Subcategory Routes
     Route::post('/admin/subcategories', [CategorySubcategoryController::class, 'storeSubcategory'])->name('admin.subcategories.store');
     Route::put('/admin/subcategories/{subcategory}', [CategorySubcategoryController::class, 'updateSubcategory'])->name('admin.subcategories.update');
     Route::delete('/admin/subcategories/{subcategory}', [CategorySubcategoryController::class, 'deleteSubcategory'])->name('admin.subcategories.delete');
 });
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
@@ -94,10 +91,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/best-sellers', [ProductController::class, 'index']);
-
 Route::get('/paypal/success/{order}', [PayPalController::class, 'success'])->name('paypal.success');
 Route::get('/paypal/cancel/{order}', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
-
 Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], '/checkout/selected', [CartController::class, 'checkoutSelected'])->name('checkout.selected');
     Route::put('/users/{user}/toggle-active', [RegisteredUserController::class, 'toggleActive'])->name('users.toggleActive');
@@ -132,10 +127,6 @@ Route::get('/chat', function () {
     return Inertia::render('ChatApp');
 });
 Route::post('/api/chat', [AiChatController::class, 'chat']);
-
-// Route::match(['get', 'post'], '/payment/credit', [PayPalController::class, 'credit'])->name('payment.credit');
-// Route::post('/payment/credit', [PayPalController::class, 'credit'])->name('payment.credit');
-
 Route::get('/check-razorpay', function () {
     dd(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
 });
@@ -169,6 +160,5 @@ Route::get('/404', function () {
 });
 
 Route::get('/book-online', [OnlineConsultationController::class, 'index'])->name('OnlineConsultation.index');
-
 
 require __DIR__ . '/auth.php';
