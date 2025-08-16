@@ -18,6 +18,8 @@ function StripeFormComponent() {
         country: '',
         payment_method: '',
         payment_method_id: '',
+        coupon: '',
+        discount: 0,
         cart: cartItems?.map(item => ({
             id: item.id,
             quantity: item.quantity,
@@ -31,13 +33,44 @@ function StripeFormComponent() {
         })));
     }, [cartItems]);
 
-    const calculateTotal = () => {
+    const calculateSubtotal = () => {
         return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    };
+
+    const calculateTotal = () => {
+        return calculateSubtotal() - data.discount;
     };
 
     const [cardError, setCardError] = useState('');
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+    const [couponInput, setCouponInput] = useState('');
+
     const isStripeReady = stripe && elements;
+
+    // ✅ Handle Coupon Apply (static for now)
+    const applyCoupon = async () => {
+    try {
+        const response = await axios.post(route("apply.coupon"), {
+            coupon: couponInput,
+        });
+
+        if (response.data.success) {
+            const coupon = response.data.coupon;
+
+            setData("coupon", coupon.code);
+
+            if (coupon.type === "percent") {
+                setData("discount", Math.round(calculateSubtotal() * (coupon.discount / 100)));
+            } else {
+                setData("discount", parseFloat(coupon.discount));
+            }
+        }
+    } catch (error) {
+        setData("coupon", "");
+        setData("discount", 0);
+        alert(error.response?.data?.message || "Invalid coupon!");
+    }
+};
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -92,7 +125,10 @@ function StripeFormComponent() {
                     <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                         <h2 className="text-xl font-semibold mb-6">Checkout</h2>
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Address */}
+                            {/* Address Fields (same as before) */}
+
+                            {/* Payment Method */}
+                             {/* Address */}
                             <div>
                                 <label className="text-sm font-medium">Address Line 1 *</label>
                                 <input
@@ -159,8 +195,6 @@ function StripeFormComponent() {
                                     />
                                 </div>
                             </div>
-
-                            {/* Payment */}
                             <div>
                                 <label className="text-sm font-medium">Payment Method *</label>
                                 <select
@@ -207,7 +241,37 @@ function StripeFormComponent() {
                             ))}
                         </ul>
                         <hr className="my-4" />
-                        <div className="flex justify-between font-semibold">
+
+                        {/* Coupon Input */}
+                        <div className="mb-4">
+                            <input
+                                type="text"
+                                placeholder="Enter Coupon"
+                                value={couponInput}
+                                onChange={(e) => setCouponInput(e.target.value)}
+                                className="w-full border border-gray-200 rounded-lg px-3 py-2 mb-2"
+                            />
+                            <button
+                                type="button"
+                                onClick={applyCoupon}
+                                className="w-full bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900 transition"
+                            >
+                                Apply Coupon
+                            </button>
+                        </div>
+
+                        {/* Summary */}
+                        <div className="flex justify-between text-sm">
+                            <span>Subtotal</span>
+                            <span>₹{calculateSubtotal()}</span>
+                        </div>
+                        {data.discount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                                <span>Discount ({data.coupon})</span>
+                                <span>- ₹{data.discount}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between font-semibold mt-2">
                             <span>Total</span>
                             <span>₹{calculateTotal()}</span>
                         </div>

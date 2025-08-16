@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\CartItem;
+use App\Models\Coupon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -133,6 +134,28 @@ class CartController extends Controller
 
         return Inertia::render('OrderForm', [
             'cartItems' => $cartItems,
+        ]);
+    }
+
+    public function applyCoupon(Request $request)
+    {
+        $code = $request->input('coupon');
+
+        $coupon = Coupon::where('code', $code)
+            ->where('status', 1)
+            ->whereDate('expires_at', '>=', now())
+            ->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired coupon!'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'coupon' => $coupon,
         ]);
     }
 }

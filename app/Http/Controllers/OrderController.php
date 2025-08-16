@@ -75,16 +75,17 @@ class OrderController extends Controller
             'cart.*.quantity' => 'required|integer|min:1',
         ]);
 
-        $totalAmount = 0;
+       $totalAmount = 0;
         foreach ($request['cart'] as $item) {
             $product = Product::findOrFail($item['id']);
             $totalAmount += $product->price * $item['quantity'];
         }
 
+        $discount = $request->input('discount', 0) ?? 0;
+        $discount_price = $totalAmount - $discount;
         $shippingFee = $request['payment_method'] === 'cod' ? 50 : 30;
-        $totalAmount += $shippingFee;
+        $totalAmount_order = $discount_price + $shippingFee;
 
-        // Create Order
         $order = Order::create([
             'user_id'        => Auth::id(),
             'order_number'   => 'ORD-' . time() . '-' . Auth::id(),
@@ -96,8 +97,10 @@ class OrderController extends Controller
             'country'        => $request['country'],
             'payment_method' => $request['payment_method'],
             'status'         => 'pending',
-            'total_amount'   => $totalAmount,
+            'total_amount'   => $totalAmount_order,
             'shipping_fee'   => $shippingFee,
+            'coupon'         => $request->input('coupon', null),
+            'discount'       => $discount,
         ]);
 
         // Create Order Items

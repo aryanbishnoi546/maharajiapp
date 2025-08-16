@@ -10,7 +10,7 @@ class Product extends Model
     
     protected $fillable = [
         'name', 'price', 'image_src', 'image_alt', 'description', 'images', 'colors', 'sizes','status',
-        'highlights', 'details', 'reviews_average', 'reviews_total_count', 'category_id', 'subcategory_id',
+        'highlights', 'details', 'reviews_average', 'reviews_total_count', 'category_id', 'subcategory_id','discount_price'
     ];
 
     protected $casts = [

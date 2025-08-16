@@ -54,6 +54,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::delete('/dashboard/coupons/{coupon}/destroy', [CouponController::class, 'destroy'])->name('coupons.destroy');
 });
 
+Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('apply.coupon');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
