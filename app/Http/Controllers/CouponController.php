@@ -43,8 +43,9 @@ class CouponController extends Controller
 
     public function edit(Coupon $coupon)
     {
-        return Inertia::render('Coupons/Edit', [
-            'coupon' => $coupon
+        return Inertia::render('Dashboard', [
+            'section' => 'Edit_Coupon', 
+            'coupon'  => $coupon,
         ]);
     }
 
@@ -61,7 +62,7 @@ class CouponController extends Controller
 
         $coupon->update($request->all());
 
-        return redirect()->route('coupon.index')->with('success', 'Coupon updated successfully.');
+        return redirect()->back()->with('success', 'Coupon updated successfully.');
     }
 
     public function destroy(Coupon $coupon)

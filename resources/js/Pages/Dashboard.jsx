@@ -26,6 +26,7 @@ import Settings from './Dashboard/Settings';
 import OrderDetails from './Dashboard/OrderDetails';
 import Create_coupon from './Dashboard/Coupons/Create_coupon';
 import CouponList from '@/Components/Coupon';
+import Edit_Coupon from './Dashboard/Coupons/Edit_coupon';
 
 export default function Dashboard({ section, products, coupons }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -43,9 +44,10 @@ export default function Dashboard({ section, products, coupons }) {
     const renderContent = () => {
         switch (section) {
             case 'users': return <Users users={users} />;
-        case 'coupon': return <CouponList coupons={coupons} />;
+            case 'coupon': return <CouponList coupons={coupons} />;
             case 'create': return <CreateUser />;
             case 'Create_coupon': return <Create_coupon />;
+            case 'Edit_Coupon': return <Edit_Coupon />;
             case 'edit-user': return <EditUser user={usePage().props.user} />;
             case 'transactions': return <div className="p-6">Transactions</div>;
             case 'sales': return <div className="p-6">Sales Content</div>;
@@ -55,7 +57,7 @@ export default function Dashboard({ section, products, coupons }) {
             case 'Categories': return <Category categories={categories} />;
             case 'orders': return <Orders orders={usePage().props.orders} />;
             case 'order-details': return <OrderDetails order={order} />;
-            default: return <div className="p-6">You're logged in!</div>;
+            default: return <Users users={users} />;
         }
     };
 

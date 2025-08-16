@@ -43,7 +43,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
    Route::prefix('dashboard')->group(function () {
         Route::get('/coupons', [CouponController::class, 'index'])->name('coupon.index');
         Route::get('/coupon/create', [CouponController::class, 'create'])->name('coupon.create');
-         Route::post('/dashboard/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
+        Route::post('/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
+        Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])->name('coupons.edit');
+        Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update');
     });
     Route::post('/dashboard/coupon/store', [CouponController::class, 'store'])->name('coupons.store');
     Route::put('/dashboard/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])

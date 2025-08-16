@@ -106,13 +106,6 @@ export default function CreateCoupon() {
                     >
                         {processing ? "Saving..." : "Save Coupon"}
                     </button>
-                    <button
-                        type="button"
-                        onClick={() => router.visit(route("coupons.index"))}
-                        className="text-gray-600 hover:underline"
-                    >
-                        Cancel
-                    </button>
                 </div>
             </form>
         </div>
