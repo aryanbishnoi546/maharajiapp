@@ -15,20 +15,35 @@ export default function FaqPage() {
     <>
       <Head title="FAQs" />
       <UserLayout>
-        <section className="bg-[#dfe3d3] text-[#3e4236] py-16 px-6 md:px-12">
+        <section className="bg-[#dfe3d3] text-[#3e4236] py-12 px-4 md:py-16 md:px-12">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-semibold text-center mb-8">Frequently Asked Questions</h1>
+            {/* Heading */}
+            <h1 className="text-2xl md:text-3xl font-semibold text-center mb-8">
+              Frequently Asked Questions
+            </h1>
+
+            {/* FAQ List */}
             <div className="space-y-4">
               {faqs.map((faq, index) => (
-                <div key={index} className="border rounded-md p-4">
+                <div key={index} className="border rounded-lg p-4 bg-white/60">
                   <button
-                    className="flex justify-between w-full text-lg font-medium"
+                    className="flex justify-between items-center w-full text-base md:text-lg font-medium"
                     onClick={() => setOpenIndex(openIndex === index ? null : index)}
                   >
-                    {faq.question}
-                    <span>{openIndex === index ? "-" : "+"}</span>
+                    <span>{faq.question}</span>
+                    <span className="ml-2 text-xl font-bold">
+                      {openIndex === index ? "−" : "+"}
+                    </span>
                   </button>
-                  {openIndex === index && <p className="mt-2">{faq.answer}</p>}
+
+                  {/* Answer */}
+                  <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                      openIndex === index ? "max-h-40 mt-2" : "max-h-0"
+                    }`}
+                  >
+                    <p className="text-sm md:text-base leading-relaxed">{faq.answer}</p>
+                  </div>
                 </div>
               ))}
             </div>
