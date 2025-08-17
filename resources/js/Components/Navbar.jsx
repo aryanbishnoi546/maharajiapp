@@ -20,7 +20,7 @@ export default function Navbar({ auth }) {
     ];
 
     const navLinkClasses = (linkHref) =>
-        `px-5 py-2 rounded-full font-semibold whitespace-nowrap transition-all
+        `block px-5 py-3 rounded-lg font-medium transition-all
         ${url === linkHref ? 'bg-gray-300 text-black' : 'bg-white text-black hover:bg-gray-200'}`;
 
     return (
@@ -43,7 +43,8 @@ export default function Navbar({ auth }) {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className={navLinkClasses(link.href)}
+                                className={`px-5 py-2 rounded-full font-semibold whitespace-nowrap transition-all
+                                    ${url === link.href ? 'bg-gray-300 text-black' : 'bg-white text-black hover:bg-gray-200'}`}
                             >
                                 {link.name}
                             </Link>
@@ -119,9 +120,9 @@ export default function Navbar({ auth }) {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile Menu - Vertical */}
                 {expanded && (
-                    <div className="lg:hidden px-4 py-6 space-y-4">
+                    <div className="lg:hidden px-4 py-6 space-y-3 flex flex-col bg-white text-black rounded-lg mt-4">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
@@ -132,15 +133,17 @@ export default function Navbar({ auth }) {
                             </Link>
                         ))}
 
+                        <hr className="my-3" />
+
                         {/* Auth Links */}
                         {auth?.user ? (
                             <>
                                 {isAdmin ? (
-                                    <Link href={route('dashboard')} className="block hover:text-gray-300">Dashboard</Link>
+                                    <Link href={route('dashboard')} className="block px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200">Dashboard</Link>
                                 ) : (
                                     <>
-                                        <Link href={route('profile.edit')} className="block hover:text-gray-300">Profile</Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="block hover:text-gray-300">
+                                        <Link href={route('profile.edit')} className="block px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200">Profile</Link>
+                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="block px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200">
                                             Log Out
                                         </Dropdown.Link>
                                     </>
@@ -148,8 +151,8 @@ export default function Navbar({ auth }) {
                             </>
                         ) : (
                             <>
-                                <Link href={route('login')} className="block hover:text-gray-300">Log in</Link>
-                                <Link href={route('register')} className="block hover:text-gray-300">Register</Link>
+                                <Link href={route('login')} className="block px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200">Log in</Link>
+                                <Link href={route('register')} className="block px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200">Register</Link>
                             </>
                         )}
                     </div>

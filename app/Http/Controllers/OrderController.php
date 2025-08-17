@@ -59,90 +59,120 @@ class OrderController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
+   public function store(Request $request)
+{
+    $request->validate([
+        'address_line1'   => 'required|max:255',
+        'address_line2'   => 'nullable|max:255',
+        'city'            => 'required|max:255',
+        'state'           => 'required|max:255',
+        'postal_code'     => 'required|max:20',
+        'country'         => 'required|max:100',
+        'payment_method'  => 'required|in:cod,credit_card,gpay,online,stripe,paypal,Stripe Payment',
+        'cart'            => 'required|array|min:1',
+        'cart.*.id'       => 'required|exists:products,id',
+        'cart.*.quantity' => 'required|integer|min:1',
+    ]);
 
-        $request->validate([
-            'address_line1'   => 'required|max:255',
-            'address_line2'   => 'nullable|max:255',
-            'city'            => 'required|max:255',
-            'state'           => 'required|max:255',
-            'postal_code'     => 'required|max:20',
-            'country'         => 'required|max:100',
-            'payment_method'  => 'required|in:cod,credit_card,gpay,online,stripe,paypal,Stripe Payment',
-            'cart'            => 'required|array|min:1',
-            'cart.*.id'       => 'required|exists:products,id',
-            'cart.*.quantity' => 'required|integer|min:1',
+    // ---------------------------
+    // STEP 1: Calculate Subtotal
+    // ---------------------------
+    $subtotal = 0;
+    foreach ($request['cart'] as $item) {
+        $product = Product::findOrFail($item['id']);
+        $subtotal += $product->price * $item['quantity'];
+    }
+
+    // ---------------------------
+    // STEP 2: Apply Discount
+    // ---------------------------
+    $discount = $request->input('discount', 0) ?? 0;
+
+    // prevent invalid discount
+    if ($discount > $subtotal) {
+        $discount = $subtotal;
+    }
+
+    $discountedTotal = $subtotal - $discount;
+
+    // ---------------------------
+    // STEP 3: Add Shipping
+    // ---------------------------
+    $shippingFee = $request['payment_method'] === 'cod' ? 50 : 30;
+    $finalAmount = $discountedTotal + $shippingFee;
+
+    // ---------------------------
+    // STEP 4: Create Order
+    // ---------------------------
+    $order = Order::create([
+        'user_id'        => Auth::id(),
+        'order_number'   => 'ORD-' . time() . '-' . Auth::id(),
+        'address_line1'  => $request['address_line1'],
+        'address_line2'  => $request['address_line2'],
+        'city'           => $request['city'],
+        'state'          => $request['state'],
+        'postal_code'    => $request['postal_code'],
+        'country'        => $request['country'],
+        'payment_method' => $request['payment_method'],
+        'status'         => 'pending',
+        'total_amount'   => $finalAmount,
+        'shipping_fee'   => $shippingFee,
+        'coupon'         => $request->input('coupon', null),
+        'discount'       => $discount,
+    ]);
+
+    // ---------------------------
+    // STEP 5: Save Order Items
+    // ---------------------------
+    foreach ($request['cart'] as $item) {
+        $product = Product::findOrFail($item['id']);
+        OrderItem::create([
+            'order_id'   => $order->id,
+            'product_id' => $product->id,
+            'quantity'   => $item['quantity'],
+            'price'      => $product->price,
         ]);
+    }
 
-       $totalAmount = 0;
-        foreach ($request['cart'] as $item) {
-            $product = Product::findOrFail($item['id']);
-            $totalAmount += $product->price * $item['quantity'];
-        }
+    Log::info('Order created', [
+        'order_id'          => $order->id,
+        'payment_method'    => $request['payment_method'],
+        'payment_method_id' => $request->get('payment_method_id'),
+        'final_amount'      => $finalAmount,
+    ]);
 
-        $discount = $request->input('discount', 0) ?? 0;
-        $discount_price = $totalAmount - $discount;
-        $shippingFee = $request['payment_method'] === 'cod' ? 50 : 30;
-        $totalAmount_order = $discount_price + $shippingFee;
+    // ---------------------------
+    // STEP 6: Handle Payment Methods
+    // ---------------------------
+    if ($request['payment_method'] === 'cod') {
+        return redirect()->route('orders.thankyou', ['order' => $order->id]);
+    }
 
-        $order = Order::create([
-            'user_id'        => Auth::id(),
-            'order_number'   => 'ORD-' . time() . '-' . Auth::id(),
-            'address_line1'  => $request['address_line1'],
-            'address_line2'  => $request['address_line2'],
-            'city'           => $request['city'],
-            'state'          => $request['state'],
-            'postal_code'    => $request['postal_code'],
-            'country'        => $request['country'],
-            'payment_method' => $request['payment_method'],
-            'status'         => 'pending',
-            'total_amount'   => $totalAmount_order,
-            'shipping_fee'   => $shippingFee,
-            'coupon'         => $request->input('coupon', null),
-            'discount'       => $discount,
-        ]);
+    if ($request['payment_method'] === 'online') {
+        // Razorpay ke liye amount ko paisa me convert karo (₹100 = 10000 paisa)
+        $order->total_amount = $finalAmount * 100;
+        return app(RazorpayController::class)->createOrder($order);
+    }
 
-        // Create Order Items
-        foreach ($request['cart'] as $item) {
-            $product = Product::findOrFail($item['id']);
-            OrderItem::create([
-                'order_id'   => $order->id,
-                'product_id' => $product->id,
-                'quantity'   => $item['quantity'],
-                'price'      => $product->price,
+    if ($request['payment_method'] === 'stripe') {
+        // Stripe ko bhi paisa (cents) chahiye
+        $order->total_amount = $finalAmount * 100;
+        return app(Api\CheckoutController::class)->processStripePayment($request, $order);
+    }
+
+    if ($request->payment_method === 'paypal') {
+        // PayPal me normally INR / USD amount hi jata hai
+        $paypalUrl = app(PayPalController::class)->createOrder($order);
+        if ($paypalUrl) {
+            return Inertia::render('OrderForm', [
+                'redirect_to' => $paypalUrl,
             ]);
         }
-
-        Log::info('Order created', [
-            'order_id'          => $order->id,
-            'payment_method'    => $request['payment_method'],
-            'payment_method_id' => $request->get('payment_method_id'),
-        ]);
-
-        // Handle Different Payment Methods
-        if ($request['payment_method'] === 'cod') {
-            return redirect()->route('orders.thankyou', ['order' => $order->id]);
-        }
-
-        if ($request['payment_method'] === 'online') {
-            return app(RazorpayController::class)->createOrder($order);
-        }
-
-        if ($request['payment_method'] === 'stripe') {
-            return app(Api\CheckoutController::class)->processStripePayment($request, $order);
-        }
-        if ($request->payment_method === 'paypal') {
-            $paypalUrl = app(PayPalController::class)->createOrder($order);
-            if ($paypalUrl) {
-                return Inertia::render('OrderForm', [
-                    'redirect_to' => $paypalUrl,
-                ]);
-            }
-        }
-
-        // return redirect()->route('payment.credit', ['order' => $order->id]);
     }
+
+    // Fallback
+    return redirect()->route('orders.thankyou', ['order' => $order->id]);
+}
 
     // Rest of your methods remain the same...
     public function show(Order $order)
