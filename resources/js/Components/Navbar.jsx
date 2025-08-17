@@ -24,7 +24,7 @@ export default function Navbar({ auth }) {
         ${url === linkHref ? 'bg-gray-300 text-black' : 'bg-white text-black hover:bg-gray-200'}`;
 
     return (
-        <div className="bg-[#2d2b2b] text-white">
+        <div className="sticky top-0 z-50 bg-[#2d2b2b] text-white">
             <header className="py-4">
                 <div className="container max-w-8xl mx-auto px-4 flex items-center justify-between relative">
                     
