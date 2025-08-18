@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OnlineConsultationController;
 use App\Http\Controllers\RazorpayController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\MeetingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -165,5 +166,7 @@ Route::get('/404', function () {
 });
 
 Route::get('/book-online', [OnlineConsultationController::class, 'index'])->name('OnlineConsultation.index');
+
+Route::post('/meetings', [MeetingController::class, 'create'])->name('zoom.meeting.create');
 
 require __DIR__ . '/auth.php';
