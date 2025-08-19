@@ -9,6 +9,10 @@ export default function FaqPage() {
     { question: "What is Ayurveda?", answer: "Ayurveda is a traditional system of medicine with roots in India over 5000 years ago." },
     { question: "Do you offer online consultations?", answer: "Yes, you can book audio/video consultations through our website." },
     { question: "What payment methods are accepted?", answer: "We accept UPI, credit/debit cards, and net banking." },
+    { question: "What is Ayurveda?", answer: "Ayurveda is a traditional system of medicine with roots in India over 5000 years ago." },
+    { question: "Do you offer online consultations?", answer: "Yes, you can book audio/video consultations through our website." },
+    { question: "What payment methods are accepted?", answer: "We accept UPI, credit/debit cards, and net banking." },
+    { question: "Do you offer online consultations?", answer: "Yes, you can book audio/video consultations through our website." },
   ];
 
   return (
