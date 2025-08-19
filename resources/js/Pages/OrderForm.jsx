@@ -205,8 +205,8 @@ function StripeFormComponent() {
                                 >
                                     <option value="">Select Payment Method</option>
                                     <option value="cod">Cash on Delivery</option>
-                                    <option value="online">Razorpay</option>
-                                    <option value="stripe">Stripe Payment</option>
+                                    {/* <option value="online">Razorpay</option> */}
+                                    {/* <option value="stripe">Stripe Payment</option> */}
                                     <option value="paypal">PayPal</option>
                                 </select>
                             </div>
