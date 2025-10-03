@@ -42,6 +42,19 @@ class Order extends Model
 }
 
 
+public function trackingEvents()
+{
+    return $this->hasMany(OrderTracking::class)->orderBy('reported_at');
+}
+
+
+public function latestTracking()
+{
+    return $this->hasOne(OrderTracking::class)->latestOfMany();
+}
+
+
+
     protected static function booted()
 {
     static::created(function ($order) {

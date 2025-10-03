@@ -121,21 +121,34 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function transactions()
-    {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
-        }
-
-        $transactions = Order::with(['user', 'payment'])
-            ->latest()
-            ->paginate(8);
-
-        return Inertia::render('Dashboard', [
-            'section'      => 'transactions',
-            'transactions' => $transactions,
-        ]);
+   public function transactions()
+{
+    if (auth()->user()->role !== 'admin') {
+        abort(403, 'Unauthorized');
     }
+
+    $transactions = Order::with([
+        'user',
+        'payment',
+        'trackingEvents' => fn($q) => $q->orderBy('reported_at')
+    ])
+    ->latest()
+    ->paginate(8);
+
+    return Inertia::render('Dashboard', [
+        'section'      => 'transactions',
+        'transactions' => $transactions->through(fn($order) => [
+            'id'              => $order->id,
+            'order_number'    => $order->order_number,
+            'total_amount' =>$order->total_amount,
+           'payment_method' => $order->payment_method ,
+            'user'            => $order->user,
+            'payment'         => $order->payment,
+            'latest_tracking' => $order->trackingEvents->last(),
+            'tracking_events' => $order->trackingEvents,
+        ]),
+    ]);
+}
 
     public function sales()
     {
@@ -279,6 +292,45 @@ class DashboardController extends Controller
         ],
     ]);
 }
+
+    public function exportUsers()
+    {
+        $fileName = "users_export.csv";
+        $users = User::all(); // ya jo filter chahiye wo laga lo
+
+        // Response headers for CSV
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+
+        $output = fopen("php://output", "w");
+
+        // CSV headings
+        fputcsv($output, [
+            'User ID',
+            'Name',
+            'Email',
+            'Role',
+            'Phone',
+            'Created At'
+        ]);
+
+        // Data rows
+        foreach ($users as $user) {
+            fputcsv($output, [
+                $user->id,
+                $user->name,
+                $user->email,
+                $user->role ?? 'N/A',
+                $user->phone ?? 'N/A',
+                $user->created_at->format('Y-m-d H:i:s'),
+            ]);
+        }
+
+        fclose($output);
+        exit; // Important: stop Laravel rendering any view
+    }
+
+
 
 
 }

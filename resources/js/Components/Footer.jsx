@@ -1,4 +1,5 @@
 import React from "react";
+import { Link, usePage } from '@inertiajs/react';
 import FloatingChat from "./FloatingChat";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -12,10 +13,19 @@ export default function Footer() {
                     <h3 className="text-lg font-semibold mb-4">Menu</h3>
                     <ul className="space-y-2">
                         <li>
-                            <a href="/" className="underline hover:text-white">Home</a>
+                            <Link href="/" className="underline hover:text-white">Home</Link>
                         </li>
                         <li>
-                            <a href="/terms" className="underline hover:text-white">Terms & Conditions</a>
+                            <Link href="/terms" className="underline hover:text-white">Terms & Conditions</Link>
+                        </li>
+                          <li>
+                            <Link href="/privacy-policy" className="underline hover:text-white">Privacy Policy</Link>
+                        </li>
+                          <li>
+                            <Link href="/refund-shipping" className="underline hover:text-white">Refund & Shipping</Link>
+                        </li>
+                          <li>
+                            <Link href="/faqs" className="underline hover:text-white">FAQs</Link>
                         </li>
                     </ul>
                 </div>

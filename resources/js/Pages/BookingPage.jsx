@@ -132,12 +132,8 @@ export default function BookingPage() {
               </h3>
               <div className="bg-[#2e3027] border border-[#444] p-4 rounded-xl space-y-4">
                 <p className="text-base">Video Consultation</p>
-                <details className="text-sm text-[#ccc]">
-                  <summary className="cursor-pointer">More details</summary>
-                  <p className="mt-2">
-                    30-minute consultation via Zoom or Google Meet.
-                  </p>
-                </details>
+                <p className="text-sm text-[#ccc]">Location: Aragaroh</p>
+                <p className="text-sm text-[#ccc]">30-minute consultation via Zoom or Google Meet.</p>
 
                 <button
                   type="button"

@@ -10,10 +10,12 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OnlineConsultationController;
 use App\Http\Controllers\RazorpayController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\MeetingController;
+use App\Models\Meeting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -137,12 +139,28 @@ Route::get('/check-razorpay', function () {
     dd(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
 });
 
-Route::get('/vision', function () {
-    return Inertia::render('Vision');
-});
-
+Route::middleware(['auth'])->group(function () {
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateTrackingStatus'])->name('orders.updateStatus');
+Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+ Route::get('/orders/{order}', [OrderController::class, 'userShow'])->name('orders.usershow');
+ Route::get('/transactions', [DashboardController::class, 'transactions'])->name('transactions');
+ Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('orders.track');
 Route::get('/booking', function () {
     return Inertia::render('BookingPage');
+});
+
+Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings.index');
+Route::get('/api/meetings/upcoming', [MeetingController::class, 'upcoming'])->name('meetings.upcoming');
+});
+
+
+Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('my.orders')->middleware('auth');
+
+Route::get('/orders/download-csv', [OrderController::class, 'downloadCsv']);
+Route::get('/orders/download-selected-csv', [OrderController::class, 'downloadSelectedCsv'])->name('orders.downloadSelectedCsv');
+
+Route::get('/vision', function () {
+    return Inertia::render('Vision');
 });
 
 Route::get('/terms', function () {

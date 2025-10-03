@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Dropdown from '@/Components/Dropdown';
+import { useEffect } from 'react';
 
 export default function Navbar({ auth }) {
     const [expanded, setExpanded] = useState(false);
     const { url, props } = usePage();
     const { cartCount } = props;
-    const isAdmin = auth?.user?.role === 'admin';
+    const effectiveAuth = auth || props?.auth || {};
+    const isAdmin = effectiveAuth?.user?.role === 'admin';
+    const [upcomingMeetings, setUpcomingMeetings] = useState([]);
+    const [meetingsOpen, setMeetingsOpen] = useState(false);
+
+    useEffect(() => {
+        if (effectiveAuth?.user) {
+            fetch('/api/meetings/upcoming', { credentials: 'same-origin' })
+                .then((r) => r.json())
+                .then((data) => setUpcomingMeetings(data.meetings || []))
+                .catch(() => {});
+        }
+    }, [effectiveAuth?.user?.id]);
 
     const navLinks = [
         { name: 'Home', href: '/' },
         { name: 'Shop', href: '/best-sellers' },
         { name: 'Online Consultation', href: '/book-online' },
         { name: 'Vision', href: '/vision' },
-        { name: 'Terms', href: '/terms' },
-        { name: 'Privacy Policy', href: '/privacy-policy' },
-        { name: 'Refund & Shipping', href: '/refund-shipping' },
-        { name: 'FAQs', href: '/faqs' },
+        // { name: 'Terms', href: '/terms' },
+        // { name: 'Privacy Policy', href: '/privacy-policy' },
+        // { name: 'Refund & Shipping', href: '/refund-shipping' },
+        // { name: 'FAQs', href: '/faqs' },
     ];
 
     const navLinkClasses = (linkHref) =>
@@ -53,7 +66,7 @@ export default function Navbar({ auth }) {
 
                     {/* Right Side - Desktop */}
                     <div className="hidden lg:flex items-center space-x-6">
-                        {auth?.user ? (
+                        {effectiveAuth?.user ? (
                             <>
                                 {isAdmin ? (
                                     <Link href={route('dashboard')} className="hover:text-gray-300">
@@ -64,9 +77,34 @@ export default function Navbar({ auth }) {
                                         <Link href={route('profile.edit')} className="hover:text-gray-300">
                                             Profile
                                         </Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="hover:text-gray-300">
+                                        <div className="relative">
+                                            <button onClick={() => setMeetingsOpen(!meetingsOpen)} className="hover:text-gray-300">Meetings</button>
+                                            {meetingsOpen && (
+                                            <div className="absolute right-0 mt-2 w-64 bg-white text-black rounded shadow-lg transition p-2 z-50">
+                                                {upcomingMeetings.length > 0 ? (
+                                                    upcomingMeetings.map((m) => (
+                                                        <a key={m.id} href={m.join_url} target="_blank" rel="noreferrer" className="block px-3 py-2 rounded hover:bg-gray-100 text-sm">
+                                                            {m.topic || 'Meeting'} — {new Date(m.start_time).toLocaleString()}
+                                                        </a>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-3 py-2 text-sm text-gray-500">No upcoming meetings</div>
+                                                )}
+                                                <div className="px-3 py-2 border-t mt-1">
+                                                    <Link href="/meetings" className="text-sm underline" onClick={() => setMeetingsOpen(false)}>View all</Link>
+                                                </div>
+                                            </div>
+                                            )}
+                                        </div>
+                                         <Link
+                                            href={route('my.orders')}
+                                            className="hover:text-gray-300"
+                                        >
+                                        Orders
+                                        </Link>
+                                        <Link href={route('logout')} method="post" as="button" className="hover:text-gray-300">
                                             Log Out
-                                        </Dropdown.Link>
+                                        </Link>
                                     </>
                                 )}
                             </>
@@ -136,7 +174,7 @@ export default function Navbar({ auth }) {
                         <hr className="my-3" />
 
                         {/* Auth Links */}
-                        {auth?.user ? (
+                        {effectiveAuth?.user ? (
                             <>
                                 {isAdmin ? (
                                     <Link href={route('dashboard')} className="block px-5 py-3 rounded-lg bg-gray-100 hover:bg-gray-200">Dashboard</Link>

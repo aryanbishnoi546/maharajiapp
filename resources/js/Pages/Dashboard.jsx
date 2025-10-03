@@ -13,7 +13,8 @@ import {
     ChevronUp,
     ChevronDownIcon,
     ChevronUpIcon,
-    TicketIcon
+    TicketIcon,
+    DollarSign
 } from 'lucide-react';
 
 import Users from './Dashboard/Users';
@@ -24,9 +25,11 @@ import Category from './Dashboard/Category';
 import Orders from './Dashboard/Orders';
 import Settings from './Dashboard/Settings';
 import OrderDetails from './Dashboard/OrderDetails';
+import MeetingsTable from './Dashboard/MeetingsTable';
 import Create_coupon from './Dashboard/Coupons/Create_coupon';
 import CouponList from '@/Components/Coupon';
 import Edit_Coupon from './Dashboard/Coupons/Edit_coupon';
+import { CalendarDays } from 'lucide-react';
 
 export default function Dashboard({ section, products, coupons }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,6 +59,7 @@ export default function Dashboard({ section, products, coupons }) {
             case 'settings': return <Settings />;
             case 'Categories': return <Category categories={categories} />;
             case 'orders': return <Orders orders={usePage().props.orders} />;
+            case 'meetings': return <MeetingsTable meetings={usePage().props.meetings} />;
             case 'order-details': return <OrderDetails order={order} />;
             default: return <Users users={users} />;
         }
@@ -85,6 +89,8 @@ export default function Dashboard({ section, products, coupons }) {
                         <SidebarLink href="/dashboard/products" label="Products" icon={ShoppingCart} />
                         <SidebarLink href="/dashboard/orders" label="All Orders" icon={Package} />
                         <SidebarLink href="/dashboard/coupons" label="Coupons" icon={TicketIcon} />
+                        <SidebarLink href="/meetings" label="Meetings" icon={CalendarDays} />
+                        {/* <SidebarLink href="/dashboard/transactions" label="Transactions" icon={DollarSign}  /> */}
                     </nav>
                 </aside>
 
