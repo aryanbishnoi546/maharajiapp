@@ -77,10 +77,7 @@ class MeetingController extends Controller
                 $user->notify(new MeetingScheduled($savedMeeting));
             }
 
-            return response()->json([
-                'message' => 'Meeting created & saved successfully ✅',
-                'meeting' => $savedMeeting
-            ]);
+            return redirect()->back()->with('success', 'Meeting created & saved successfully.');
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

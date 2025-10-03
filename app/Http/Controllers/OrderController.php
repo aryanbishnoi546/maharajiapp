@@ -72,7 +72,7 @@ class OrderController extends Controller
         'state'           => 'required|max:255',
         'postal_code'     => 'required|max:20',
         'country'         => 'required|max:100',
-        'payment_method'  => 'required|in:cod,credit_card,gpay,online,stripe,paypal,Stripe Payment',
+        'payment_method'  => 'required|in:cod,paypal',
         'cart'            => 'required|array|min:1',
         'cart.*.id'       => 'required|exists:products,id',
         'cart.*.quantity' => 'required|integer|min:1',
@@ -167,17 +167,7 @@ class OrderController extends Controller
         return redirect()->route('orders.thankyou', ['order' => $order->id]);
     }
 
-    if ($request['payment_method'] === 'online') {
-        // Razorpay ke liye amount ko paisa me convert karo (₹100 = 10000 paisa)
-        $order->total_amount = $finalAmount * 100;
-        return app(RazorpayController::class)->createOrder($order);
-    }
-
-    if ($request['payment_method'] === 'stripe') {
-        // Stripe ko bhi paisa (cents) chahiye
-        $order->total_amount = $finalAmount * 100;
-        return app(Api\CheckoutController::class)->processStripePayment($request, $order);
-    }
+    // Disable Razorpay/Stripe flows as requested
 
     if ($request->payment_method === 'paypal') {
         // PayPal me normally INR / USD amount hi jata hai

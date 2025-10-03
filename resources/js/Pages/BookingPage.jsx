@@ -1,11 +1,14 @@
 import React, { useState } from "react";
+import { router } from '@inertiajs/react';
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
+import { usePage } from '@inertiajs/react';
 
 export default function BookingPage() {
+  const { flash } = usePage().props;
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -23,45 +26,37 @@ export default function BookingPage() {
       day: "numeric",
     });
 
-  // ✅ handleNext with API call
+  const toYmd = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  // ✅ handleNext via Inertia router (handles CSRF/session reliably)
   const handleNext = async () => {
     if (!selectedTime) {
       alert("Please select a time slot ⏰");
       return;
     }
 
-    console.log("Button clicked ✅");
-    console.log("Selected Date:", selectedDate);
-    console.log("Selected Time:", selectedTime);
-
     setLoading(true);
-    try {
-      const response = await fetch("/meetings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-        },
-        body: JSON.stringify({
-          date: selectedDate,
-          time: selectedTime,
-          service: "Video Consultation",
-        }),
-      });
-
-
-      if (!response.ok) throw new Error("Failed to create meeting");
-
-      const data = await response.json();
-      console.log("✅ Meeting Created:", data);
-
-      alert("Meeting booked successfully!");
-    } catch (error) {
-      console.error("❌ Error:", error);
-      alert("Something went wrong while booking");
-    } finally {
-      setLoading(false);
-    }
+    router.post('/meetings', {
+      date: toYmd(selectedDate),
+      time: selectedTime,
+      service: 'Video Consultation',
+    }, {
+      preserveScroll: true,
+      onSuccess: () => {
+        alert('Meeting booked successfully!');
+        setLoading(false);
+      },
+      onError: (errors) => {
+        console.error(errors);
+        alert('Something went wrong while booking');
+        setLoading(false);
+      }
+    });
   };
 
   return (
@@ -69,6 +64,11 @@ export default function BookingPage() {
       <Navbar />
       <div className="bg-[#393c30] text-[#fce0d9] py-10 font-sans">
         <div className="max-w-6xl mx-auto">
+          {flash?.success && (
+            <div className="mb-4 bg-green-600 text-white px-4 py-3 rounded shadow">
+              {flash.success}
+            </div>
+          )}
           <button className="text-sm mb-6 flex items-center gap-1">
             <ChevronLeft size={18} /> Back
           </button>

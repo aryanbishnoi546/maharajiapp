@@ -47,7 +47,6 @@ function StripeFormComponent() {
 
     const isStripeReady = stripe && elements;
 
-    // ✅ Handle Coupon Apply (static for now)
     const applyCoupon = async () => {
     try {
         const response = await axios.post(route("apply.coupon"), {
@@ -76,44 +75,17 @@ function StripeFormComponent() {
         e.preventDefault();
         setCardError('');
 
-        if (data.payment_method === 'stripe') {
-            if (!isStripeReady) {
-                setCardError('Stripe not loaded yet.');
-                return;
-            }
-
-            const cardElement = elements.getElement(CardElement);
-            if (!cardElement) {
-                setCardError('Card input missing.');
-                return;
-            }
-
-            setIsProcessingPayment(true);
-
-            const { error, paymentMethod } = await stripe.createPaymentMethod({
-                type: 'card',
-                card: cardElement,
-            });
-
-            if (error) {
-                setCardError(error.message);
-                setIsProcessingPayment(false);
-                return;
-            }
-
-            setData('payment_method_id', paymentMethod.id);
-        } else {
+        // Only COD and PayPal supported
+        if (data.payment_method === 'paypal' || data.payment_method === 'cod') {
             post(route('orders.store'), { preserveScroll: true });
+            return;
         }
+
+        alert('Please select Cash on Delivery or PayPal.');
     };
 
     useEffect(() => {
-        if (data.payment_method_id && data.payment_method === 'stripe' && isProcessingPayment) {
-            post(route('orders.store'), {
-                preserveScroll: true,
-                onFinish: () => setIsProcessingPayment(false),
-            });
-        }
+        // no-op for stripe now
     }, [data.payment_method_id]);
 
     return (
@@ -205,19 +177,9 @@ function StripeFormComponent() {
                                 >
                                     <option value="">Select Payment Method</option>
                                     <option value="cod">Cash on Delivery</option>
-                                    <option value="online">Razorpay</option>
-                                    <option value="stripe">Stripe Payment</option>
                                     <option value="paypal">PayPal</option>
                                 </select>
                             </div>
-
-                            {data.payment_method === 'stripe' && (
-                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                    <label className="text-sm font-medium">Card Details</label>
-                                    <CardElement className="p-3 border border-gray-200 rounded mt-2 bg-white" />
-                                    {cardError && <p className="text-red-500 text-sm mt-2">{cardError}</p>}
-                                </div>
-                            )}
 
                             <button
                                 type="submit"
