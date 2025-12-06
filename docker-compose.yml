@@ -1,0 +1,156 @@
+x-app-build: &app-build
+  context: .
+  dockerfile: Dockerfile
+  target: app
+  args:
+    NODE_VERSION: ${NODE_VERSION:-20}
+    PHP_VERSION: ${PHP_VERSION:-8.3}
+
+x-web-build: &web-build
+  context: .
+  dockerfile: Dockerfile
+  target: web
+  args:
+    NODE_VERSION: ${NODE_VERSION:-20}
+    PHP_VERSION: ${PHP_VERSION:-8.3}
+
+services:
+  env-init:
+    image: php:8.3-cli
+    entrypoint: ["/bin/sh", "-c", "/workspace/docker/scripts/init-env.sh"]
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-maharajiapp}
+      DB_USERNAME: ${DB_USERNAME:-maharaji}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+    restart: "no"
+
+  app:
+    build: *app-build
+    pull_policy: build
+    image: ${APP_IMAGE:-maharajiapp-app}
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${APP_URL:-http://localhost:${APP_PORT:-8185}}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-maharajiapp}
+      DB_USERNAME: ${DB_USERNAME:-maharaji}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: database
+      CACHE_STORE: database
+    volumes:
+      - storage:/var/www/html/storage
+      - bootstrap-cache:/var/www/html/bootstrap/cache
+    depends_on:
+      env-init:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  web:
+    build: *web-build
+    pull_policy: build
+    image: ${WEB_IMAGE:-maharajiapp-web}
+    depends_on:
+      env-init:
+        condition: service_completed_successfully
+      app:
+        condition: service_started
+    ports:
+      - "${APP_PORT:-8185}:80"
+    volumes:
+      - storage:/var/www/html/storage
+      - bootstrap-cache:/var/www/html/bootstrap/cache
+    restart: unless-stopped
+
+  queue:
+    build: *app-build
+    pull_policy: build
+    image: ${APP_IMAGE:-maharajiapp-app}
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    depends_on:
+      env-init:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage:/var/www/html/storage
+      - bootstrap-cache:/var/www/html/bootstrap/cache
+    restart: unless-stopped
+
+  scheduler:
+    build: *app-build
+    pull_policy: build
+    image: ${APP_IMAGE:-maharajiapp-app}
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql
+      REDIS_HOST: redis
+    command: php artisan schedule:work
+    depends_on:
+      env-init:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage:/var/www/html/storage
+      - bootstrap-cache:/var/www/html/bootstrap/cache
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.3
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-maharajiapp}
+      MYSQL_USER: ${DB_USERNAME:-maharaji}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  storage:
+  bootstrap-cache:
+  mysql_data:
+  redis_data:

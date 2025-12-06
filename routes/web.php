@@ -13,6 +13,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OnlineConsultationController;
 use App\Http\Controllers\RazorpayController;
+use App\Http\Controllers\SlicePaymentController;
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\MeetingController;
 use App\Models\Meeting;
@@ -101,6 +103,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/best-sellers', [ProductController::class, 'index']);
 Route::get('/paypal/success/{order}', [PayPalController::class, 'success'])->name('paypal.success');
 Route::get('/paypal/cancel/{order}', [PayPalController::class, 'cancelTransaction'])->name('paypal.cancel');
+Route::post('/payment/slice/webhook', [SlicePaymentController::class, 'webhook'])
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->name('payment.slice.webhook');
+Route::get('/payment/slice/return/{order}', [SlicePaymentController::class, 'return'])->name('payment.slice.return');
 Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], '/checkout/selected', [CartController::class, 'checkoutSelected'])->name('checkout.selected');
     Route::put('/users/{user}/toggle-active', [RegisteredUserController::class, 'toggleActive'])->name('users.toggleActive');

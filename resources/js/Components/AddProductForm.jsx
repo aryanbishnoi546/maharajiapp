@@ -7,6 +7,7 @@ export default function AddProductForm({ onClose, categories = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         price: '',
+        discount_price: '',
         image_alt: '',
         images: [],
         description: '',
@@ -27,6 +28,7 @@ export default function AddProductForm({ onClose, categories = [] }) {
         formData.append('name', data.name);
         formData.append('price', data.price);
         formData.append('image_alt', data.image_alt);
+        formData.append('discount_price', data.discount_price || '');
         formData.append('description', data.description);
         formData.append('details', data.details);
         formData.append('reviews_average', data.reviews_average ?? '');
@@ -64,7 +66,7 @@ export default function AddProductForm({ onClose, categories = [] }) {
             <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
                 <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-8 lg:text-3xl">Add New Product</h2>
                 <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-lg border p-6 bg-white" encType="multipart/form-data">
-                    <div className='flex gap-4'>
+                    <div className='flex flex-wrap gap-4'>
                         <div className="mb-4 w-1/2">
                             <label className="mb-2 inline-block text-sm text-gray-800 sm:text-base">Name</label>
                             <input
@@ -85,6 +87,21 @@ export default function AddProductForm({ onClose, categories = [] }) {
                                 className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
                             />
                             {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+                        </div>
+                        <div className="mb-4 w-1/2">
+                            <label className="mb-2 inline-block text-sm text-gray-800 sm:text-base">Discount (%)</label>
+                            <input
+                                name="discount_price"
+                                type='number'
+                                step="0.01"
+                                min="0"
+                                max="99"
+                                value={data.discount_price}
+                                onChange={(e) => setData('discount_price', e.target.value)}
+                                className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Leave blank to keep product at full price.</p>
+                            {errors.discount_price && <p className="text-red-500 text-sm mt-1">{errors.discount_price}</p>}
                         </div>
                     </div>
                     <div className='flex gap-4'>

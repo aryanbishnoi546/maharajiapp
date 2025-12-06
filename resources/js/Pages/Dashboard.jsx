@@ -3,18 +3,14 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     Users as UsersIcon,
-    CreditCard,
     Package,
     ShoppingCart,
-    ShieldCheck,
     Layers,
-    Settings as SettingsIcon,
-    LogOut,
-    ChevronUp,
     ChevronDownIcon,
     ChevronUpIcon,
     TicketIcon,
-    DollarSign
+    CalendarDays,
+    ShieldCheck
 } from 'lucide-react';
 
 import Users from './Dashboard/Users';
@@ -29,12 +25,14 @@ import MeetingsTable from './Dashboard/MeetingsTable';
 import Create_coupon from './Dashboard/Coupons/Create_coupon';
 import CouponList from '@/Components/Coupon';
 import Edit_Coupon from './Dashboard/Coupons/Edit_coupon';
-import { CalendarDays } from 'lucide-react';
-
 export default function Dashboard({ section, products, coupons }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
-    const { users, categories, order, url } = usePage().props;
+    const { users, categories, order, url, orders, auth } = usePage().props;
+    const totalUsers = users?.length ?? 0;
+    const totalProducts = products?.total ?? products?.data?.length ?? 0;
+    const totalOrders = orders?.total ?? 0;
+    const showOverviewStats = !section || section === 'home';
 
     useEffect(() => {
         if (url && url.startsWith('/dashboard/settings')) {
@@ -43,6 +41,30 @@ export default function Dashboard({ section, products, coupons }) {
             setOpenDropdown(null);
         }
     }, [url]);
+
+    const statCards = [
+        {
+            label: 'Active Users',
+            value: totalUsers,
+            change: '+4 this week',
+            icon: UsersIcon,
+            accent: 'bg-emerald-500/15 text-emerald-600'
+        },
+        {
+            label: 'Live Products',
+            value: totalProducts,
+            change: '+2 launched',
+            icon: ShoppingCart,
+            accent: 'bg-amber-500/15 text-amber-600'
+        },
+        {
+            label: 'Orders this month',
+            value: totalOrders,
+            change: 'Updated hourly',
+            icon: Package,
+            accent: 'bg-blue-500/15 text-blue-600'
+        }
+    ];
 
     const renderContent = () => {
         switch (section) {
@@ -69,38 +91,88 @@ export default function Dashboard({ section, products, coupons }) {
         <AuthenticatedLayout>
             <Head title="Dashboard" />
 
-            <div className="lg:hidden bg-white px-4 py-3 shadow-md flex justify-between items-center">
-                <button
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="text-green-700 text-xl"
+            <div className="flex min-h-screen bg-slate-50">
+                <aside
+                    className={`fixed inset-y-0 left-0 z-30 w-72 bg-[#0f1f1a] text-white transition-transform duration-300 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
                 >
-                    ☰
-                </button>
-                <span className="font-semibold text-green-700">Dashboard</span>
-            </div>
-
-            <div className="flex h-screen overflow-hidden">
-                {/* Sidebar */}
-                <aside className={`fixed inset-y-0 left-0 z-30 w-64 bg-[#1e2a1f] text-white transition-transform duration-300 ease-in-out transform p-4 lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <div className="mb-4 text-xl font-bold">Admin Panel</div>
-                    <nav className="space-y-1">
+                    <div className="px-6 py-6 border-b border-white/10 flex items-center gap-3">
+                        <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl">🪷</div>
+                        <div>
+                            <p className="text-xs uppercase tracking-[0.3em] text-emerald-200">Admin</p>
+                            <h1 className="text-lg font-semibold">Maharaji Panel</h1>
+                        </div>
+                    </div>
+                    <nav className="px-4 py-6 space-y-1">
                         <SidebarLink href="/dashboard/users" label="All Users" icon={UsersIcon} />
                         <SidebarLink href="/dashboard/Categories" label="Categories" icon={Layers} />
                         <SidebarLink href="/dashboard/products" label="Products" icon={ShoppingCart} />
-                        <SidebarLink href="/dashboard/orders" label="All Orders" icon={Package} />
+                        <SidebarLink href="/dashboard/orders" label="Orders" icon={Package} />
                         <SidebarLink href="/dashboard/coupons" label="Coupons" icon={TicketIcon} />
                         <SidebarLink href="/meetings" label="Meetings" icon={CalendarDays} />
-                        {/* <SidebarLink href="/dashboard/transactions" label="Transactions" icon={DollarSign}  /> */}
                     </nav>
                 </aside>
 
-                {sidebarOpen && (
-                    <div className="fixed inset-0 z-20 bg-black bg-opacity-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
-                )}
+                {sidebarOpen && <div className="fixed inset-0 z-20 bg-black/40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
 
-                <main className="flex-1 overflow-y-auto bg-[gray-100]">
-                    {renderContent()}
-                </main>
+                <div className="flex-1 flex flex-col">
+                    <div className="lg:hidden bg-white px-4 py-3 shadow flex justify-between items-center">
+                        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-emerald-700 text-xl">☰</button>
+                        <span className="font-semibold text-emerald-700">Dashboard</span>
+                    </div>
+
+                    <header className="hidden lg:flex items-center justify-between px-10 py-6 border-b border-slate-200 bg-white">
+                        <div>
+                            <p className="text-sm text-slate-500">Welcome back</p>
+                            <h2 className="text-2xl font-semibold text-slate-800">{auth?.user?.name ?? 'Team Maharaji'}</h2>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="text-right">
+                                <p className="text-sm text-slate-500">Role</p>
+                                <p className="font-medium text-slate-800">{auth?.user?.role ?? 'admin'}</p>
+                            </div>
+                            <div className="h-12 w-12 rounded-2xl bg-emerald-500/15 flex items-center justify-center text-lg text-emerald-600">
+                                {auth?.user?.name?.[0]?.toUpperCase() ?? 'M'}
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 overflow-y-auto">
+                        <div className="px-4 py-6 lg:px-10 lg:py-8 space-y-8">
+                            {showOverviewStats && (
+                                <div className="grid gap-4 md:grid-cols-3">
+                                    {statCards.map((card) => (
+                                        <div key={card.label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{card.label}</p>
+                                                    <p className="text-3xl font-semibold text-slate-900 mt-2">{card.value}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">{card.change}</p>
+                                                </div>
+                                                <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${card.accent}`}>
+                                                    <card.icon size={22} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div className="bg-gradient-to-br from-[#0f1f1a] to-[#1b4332] rounded-2xl p-5 text-white flex flex-col justify-between">
+                                        <div>
+                                            <p className="text-xs uppercase tracking-[0.3em] text-emerald-200">System health</p>
+                                            <p className="text-3xl font-semibold mt-2">100%</p>
+                                            <p className="text-sm text-emerald-100 mt-1">Services & queues operational</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm mt-4 text-emerald-100">
+                                            <ShieldCheck size={18} />Backups synced 10 min ago
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="bg-white rounded-3xl shadow-sm border border-slate-100">
+                                {renderContent()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </AuthenticatedLayout>
     );
@@ -113,8 +185,7 @@ function SidebarLink({ href, label, icon: Icon }) {
     return (
         <Link
             href={href}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${isActive ? 'bg-[#3a543c] text-white' : 'hover:bg-[#3a543c] hover:text-white'
-                }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition text-sm ${isActive ? 'bg-white/10 text-white' : 'text-slate-200 hover:bg-white/5'}`}
         >
             {Icon && <Icon size={18} />}
             {label}

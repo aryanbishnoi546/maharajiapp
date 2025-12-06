@@ -12,12 +12,15 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showAllSessions, setShowAllSessions] = useState(false);
 
   const times = [
     "9:00 am", "9:30 am", "10:00 am",
     "10:30 am", "11:00 am", "11:30 am",
     "12:00 pm", "12:30 pm", "1:00 pm", "1:30 pm",
+    "2:00 pm", "2:30 pm", "3:00 pm"
   ];
+  const primaryTimes = times.slice(0, 8);
 
   const formatDate = (date) =>
     date.toLocaleDateString("en-US", {
@@ -102,7 +105,7 @@ export default function BookingPage() {
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {times.map((time) => (
+                  {primaryTimes.map((time) => (
                     <button
                       key={time}
                       type="button"
@@ -118,7 +121,11 @@ export default function BookingPage() {
                 </div>
 
                 <div className="mt-3">
-                  <button className="text-sm underline hover:text-white">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllSessions(true)}
+                    className="text-sm underline hover:text-white"
+                  >
                     Show all sessions
                   </button>
                 </div>
@@ -152,6 +159,38 @@ export default function BookingPage() {
         </div>
       </div>
       <Footer />
+
+      {showAllSessions && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4">
+          <div className="bg-[#2e3027] border border-[#51524a] rounded-3xl w-full max-w-lg p-6 text-white shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">All available sessions</h3>
+              <button type="button" onClick={() => setShowAllSessions(false)} className="text-sm text-gray-300">
+                Close
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {times.map((time) => (
+                <button
+                  key={time}
+                  type="button"
+                  onClick={() => {
+                    setSelectedTime(time);
+                    setShowAllSessions(false);
+                  }}
+                  className={`py-2 px-3 rounded border text-sm transition ${selectedTime === time
+                    ? 'bg-[#fce0d9] text-black'
+                    : 'border-[#53544a] text-[#fce0d9] hover:bg-[#3a3b31]'}
+                  `}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

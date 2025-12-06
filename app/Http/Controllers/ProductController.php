@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Subcategory;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 class ProductController extends Controller
 {
@@ -24,7 +25,7 @@ public function index()
                 'price' => $product->price,
                 'status' => $product->status,
                 'imageAlt' => $product->image_alt,
-                'images' => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
+                'images' => is_array($product->images) ? $product->images : ($product->images ? json_decode($product->images, true) : []),
                 'category' => $product->category ? $product->category->name : null,
                 'subcategory' => $product->subcategory ? $product->subcategory->name : null,
             ];
@@ -47,7 +48,7 @@ public function index()
             'price' => $product->price,
             'imageAlt' => $product->image_alt ?? 'Product image',
             'description' => $product->description ?? '',
-            'images' => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
+            'images' => is_array($product->images) ? $product->images : ($product->images ? json_decode($product->images, true) : []),
             'colors' => $product->colors ? json_decode($product->colors, true) : [],
             'sizes' => $product->sizes ? json_decode($product->sizes, true) : [],
             'highlights' => $product->highlights ? json_decode($product->highlights, true) : [],
@@ -69,24 +70,24 @@ public function index()
 {
     $validated = $request->validate([
         'name' => 'required|string|max:255',
-        'price' => 'required|string',
-        'image_alt' => 'required|string',
+        'price' => 'required|numeric|min:0',
+        'discount_price' => 'nullable|numeric|min:0|max:99',
+        'image_alt' => 'required|string|max:255',
         'description' => 'nullable|string',
         'details' => 'nullable|string',
         'reviews_average' => 'nullable|numeric',
         'reviews_total_count' => 'nullable|integer',
-        'images' => 'required|array',
-        'images.*' => 'image|max:2048',
+        'images' => 'required|array|min:1',
+        'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:4096',
         'category_id' => 'nullable|exists:categories,id',
         'subcategory_id' => 'nullable|exists:subcategories,id',
-        'status' => 'active',
+        'status' => ['nullable', Rule::in(['active', 'inactive'])],
     ]);
 
     $imagePaths = [];
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $image) {
-            $path = $image->store('products', 'public');
-            $imagePaths[] = $path;
+            $imagePaths[] = $image->store('products', 'public');
         }
     }
 
@@ -94,18 +95,20 @@ public function index()
         'name' => $validated['name'],
         'price' => $validated['price'],
         'image_alt' => $validated['image_alt'],
-        'description' => $validated['description'],
-        'details' => $validated['details'],
-        'reviews_average' => $validated['reviews_average'],
-        'reviews_total_count' => $validated['reviews_total_count'],
-        'images' => json_encode($imagePaths),
+        'description' => $validated['description'] ?? null,
+        'details' => $validated['details'] ?? null,
+        'reviews_average' => $validated['reviews_average'] ?? null,
+        'reviews_total_count' => $validated['reviews_total_count'] ?? null,
+        'images' => $imagePaths,
         'category_id' => $validated['category_id'] ?? null,
         'subcategory_id' => $validated['subcategory_id'] ?? null,
+        'discount_price' => $validated['discount_price'] ?? null,
+        'status' => $validated['status'] ?? 'active',
     ]);
 
-    Log::info('Product created:', $product->toArray());
+    Log::info('Product created', ['id' => $product->id, 'name' => $product->name]);
 
-    return back()->with('success', 'Product created successfully');
+    return redirect()->route('dashboard.products')->with('success', 'Product created successfully');
 }
 
 public function update(Request $request, Product $product)
@@ -113,6 +116,7 @@ public function update(Request $request, Product $product)
     $validated = $request->validate([
         'name' => 'sometimes|required|string|max:255',
         'price' => 'sometimes|required|numeric',
+        'discount_price' => 'nullable|numeric|min:0|max:99',
         'description' => 'sometimes|required|string',
         'category_id' => 'nullable|exists:categories,id',
         'subcategory_id' => 'nullable|exists:subcategories,id',
@@ -123,6 +127,7 @@ public function update(Request $request, Product $product)
     $product->update([
         'name' => $request->input('name', $product->name),
         'price' => $request->input('price', $product->price),
+        'discount_price' => $request->input('discount_price', $product->discount_price),
         'description' => $request->input('description', $product->description),
         'category_id' => $request->input('category_id', $product->category_id),
         'subcategory_id' => $request->input('subcategory_id', $product->subcategory_id),
@@ -141,11 +146,11 @@ public function update(Request $request, Product $product)
 
         $finalImages = is_array($existingImages)
             ? $existingImages
-            : json_decode($existingImages, true);
+            : (json_decode($existingImages, true) ?? []);
     }
 
     if (!empty($finalImages)) {
-        $product->images = json_encode($finalImages);
+        $product->images = $finalImages;
         $product->save();
     }
 
@@ -178,12 +183,13 @@ public function toggleStatus(Request $request, $id)
                 'id'             => $product->id,
                 'name'           => $product->name,
                 'price'          => $product->price,
+                'discount_price' => $product->discount_price,
                 'status'         => $product->status,
                 'category_id'    => $product->category_id,
                 'subcategory_id' => $product->subcategory_id,
                 'description'    => $product->description,
                 'imageAlt'       => $product->image_alt,
-                'images'         => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
+                'images'         => is_array($product->images) ? $product->images : ($product->images ? json_decode($product->images, true) : []),
             ];
         });
 

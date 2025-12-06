@@ -42,7 +42,7 @@ class HomeController extends Controller
                 'name' => $product->name,
                 'price' => $product->price,
                 'image_alt' => $product->image_alt,
-                'images' => $product->images ? json_decode(str_replace('\/', '/', $product->images), true) : [],
+                    'images' => is_array($product->images) ? $product->images : ($product->images ? json_decode($product->images, true) : []),
                 'category_id' => $product->category_id,
                 'subcategory_id' => $product->subcategory_id ?? null,
             ];

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +11,11 @@ use Illuminate\Support\Facades\Log;
 use App\Notifications\OrderStatusUpdated;
 use Illuminate\Support\Facades\Storage;
 use App\Models\CartItem;
+use App\Services\SlicePaymentService;
 use Inertia\Inertia;
 use App\Events\OrderTrackingUpdated;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -63,8 +66,12 @@ class OrderController extends Controller
         ]);
     }
 
-   public function store(Request $request)
+   public function store(Request $request, SlicePaymentService $slicePaymentService)
 {
+    $market = config('app.market', []);
+    $allowedPaymentMethods = $market['payment_methods'] ?? ['cod'];
+    $currencyCode = $market['currency_code'] ?? 'USD';
+
     $request->validate([
         'address_line1'   => 'required|max:255',
         'address_line2'   => 'nullable|max:255',
@@ -72,7 +79,7 @@ class OrderController extends Controller
         'state'           => 'required|max:255',
         'postal_code'     => 'required|max:20',
         'country'         => 'required|max:100',
-        'payment_method'  => 'required|in:cod,paypal',
+        'payment_method'  => ['required', Rule::in($allowedPaymentMethods)],
         'cart'            => 'required|array|min:1',
         'cart.*.id'       => 'required|exists:products,id',
         'cart.*.quantity' => 'required|integer|min:1',
@@ -123,6 +130,7 @@ class OrderController extends Controller
         'shipping_fee'   => $shippingFee,
         'coupon'         => $request->input('coupon', null),
         'discount'       => $discount,
+        'currency'       => $currencyCode,
     ]);
 
         // Send order placed email to user
@@ -167,19 +175,39 @@ class OrderController extends Controller
         return redirect()->route('orders.thankyou', ['order' => $order->id]);
     }
 
-    // Disable Razorpay/Stripe flows as requested
+    if ($request['payment_method'] === 'slice') {
+        try {
+            $sliceCheckout = $slicePaymentService->createCheckoutSession($order);
 
-    if ($request->payment_method === 'paypal') {
-        // PayPal me normally INR / USD amount hi jata hai
-        $paypalUrl = app(PayPalController::class)->createOrder($order);
-        if ($paypalUrl) {
-            return Inertia::render('OrderForm', [
-                'redirect_to' => $paypalUrl,
+            Payment::updateOrCreate(
+                ['order_id' => $order->id, 'payment_method' => 'slice'],
+                [
+                    'status' => 'pending',
+                    'transaction_id' => $sliceCheckout['transaction_id'] ?? null,
+                    'payment_response' => $sliceCheckout,
+                ]
+            );
+
+            if (! empty($sliceCheckout['redirect_url'])) {
+                return Inertia::location($sliceCheckout['redirect_url']);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Slice payment initiation failed', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
             ]);
+
+            return redirect()->route('cart.index')->with('error', 'Unable to initiate Slice payment. Please try again or choose another method.');
         }
     }
 
-    // Fallback
+    if ($request->payment_method === 'paypal') {
+        $paypalUrl = app(PayPalController::class)->createOrder($order);
+        if ($paypalUrl) {
+            return Inertia::location($paypalUrl);
+        }
+    }
+
     return redirect()->route('orders.thankyou', ['order' => $order->id]);
 }
 

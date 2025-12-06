@@ -15,7 +15,7 @@ class AiChatController extends Controller
             'HTTP-Referer'  => 'http://localhost',
             'X-Title'       => 'Laravel AI Chat',
         ])->post('https://openrouter.ai/api/v1/chat/completions', [
-            'model'    => 'openai/gpt-3.5-turbo',
+            'model'    => 'google/gemma-3-12b-it:free',
             'messages' => [
                 ['role' => 'user', 'content' => $message],
             ],

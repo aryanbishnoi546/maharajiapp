@@ -6,10 +6,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 export default function CalendarTimer() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
+  const [showAllSessions, setShowAllSessions] = useState(false);
   const timeSlots = [
     "9:00 am", "9:30 am", "10:00 am", "10:30 am", "11:00 am",
-    "11:30 am", "12:00 pm", "12:30 pm", "1:00 pm", "1:30 pm"
+    "11:30 am", "12:00 pm", "12:30 pm", "1:00 pm", "1:30 pm",
+    "2:00 pm", "2:30 pm", "3:00 pm"
   ];
+  const primarySlots = timeSlots.slice(0, 8);
 
   return (
     <div className="min-h-screen bg-[#2d2e27] text-[#e8d0c5] font-sans p-6">
@@ -50,7 +53,7 @@ export default function CalendarTimer() {
                   Availability for {selectedDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
                 </p>
                 <div className="grid grid-cols-2 gap-3 mt-2">
-                  {timeSlots.map((time) => (
+                  {primarySlots.map((time) => (
                     <button
                       key={time}
                       onClick={() => setSelectedTime(time)}
@@ -64,7 +67,13 @@ export default function CalendarTimer() {
                     </button>
                   ))}
                 </div>
-                <button className="text-sm underline mt-2 text-[#b8ada2] hover:text-white">Show all sessions</button>
+                <button
+                  type="button"
+                  onClick={() => setShowAllSessions(true)}
+                  className="text-sm underline mt-2 text-[#b8ada2] hover:text-white"
+                >
+                  Show all sessions
+                </button>
               </div>
             </div>
           </div>
@@ -86,6 +95,35 @@ export default function CalendarTimer() {
           </div>
         </div>
       </div>
+
+      {showAllSessions && (
+        <div className="fixed inset-0 bg-black/60 grid place-items-center z-50">
+          <div className="bg-[#2d2e27] text-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">All available slots</h3>
+              <button onClick={() => setShowAllSessions(false)} className="text-sm text-[#c7c0b9]">Close</button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {timeSlots.map((time) => (
+                <button
+                  key={time}
+                  onClick={() => {
+                    setSelectedTime(time);
+                    setShowAllSessions(false);
+                  }}
+                  className={`py-2 px-4 rounded-md border transition ${
+                    selectedTime === time
+                      ? 'bg-[#f5cabb] text-black font-semibold'
+                      : 'bg-transparent border-[#44433f] text-[#e8d0c5] hover:bg-[#3e3e36]'
+                  }`}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

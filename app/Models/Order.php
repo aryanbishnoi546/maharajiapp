@@ -24,6 +24,10 @@ class Order extends Model
         'total_amount',
         'shipping_fee',
         'status',
+        'currency',
+        'coupon',
+        'discount',
+        'order_number',
     ];
 
     public function items()

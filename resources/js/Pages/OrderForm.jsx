@@ -3,11 +3,20 @@ import { useForm, usePage } from '@inertiajs/react';
 import { Elements, useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { stripePromise } from '../Pages/stripe';
 import UserLayout from '@/Layouts/UserLayout';
+import { formatCurrency } from '@/utils/currency';
 
 function StripeFormComponent() {
-    const { cartItems } = usePage().props;
+    const { cartItems = [], market } = usePage().props;
     const stripe = useStripe();
     const elements = useElements();
+
+    const paymentOptions = market?.payment_methods ?? ['cod'];
+    const paymentLabels = {
+        cod: 'Cash on Delivery',
+        paypal: 'PayPal',
+        slice: 'Slice Pay (India)',
+    };
+    const formatAmount = (value) => formatCurrency(value, market);
 
     const { data, setData, post, processing, errors } = useForm({
         address_line1: '',
@@ -27,6 +36,10 @@ function StripeFormComponent() {
     });
 
     useEffect(() => {
+        if (!Array.isArray(cartItems)) {
+            return;
+        }
+
         setData('cart', cartItems.map(item => ({
             id: item.id,
             quantity: item.quantity,
@@ -34,6 +47,10 @@ function StripeFormComponent() {
     }, [cartItems]);
 
     const calculateSubtotal = () => {
+        if (!Array.isArray(cartItems)) {
+            return 0;
+        }
+
         return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     };
 
@@ -176,8 +193,11 @@ function StripeFormComponent() {
                                     required
                                 >
                                     <option value="">Select Payment Method</option>
-                                    <option value="cod">Cash on Delivery</option>
-                                    <option value="paypal">PayPal</option>
+                                    {paymentOptions.map((method) => (
+                                        <option value={method} key={method}>
+                                            {paymentLabels[method] ?? method.toUpperCase()}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -195,10 +215,10 @@ function StripeFormComponent() {
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                         <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
                         <ul className="space-y-3">
-                            {cartItems.map((item) => (
+                            {cartItems?.map((item) => (
                                 <li key={item.id} className="flex justify-between text-sm">
                                     <span>{item.name} × {item.quantity}</span>
-                                    <span>₹{item.price * item.quantity}</span>
+                                    <span>{formatAmount(item.price * item.quantity)}</span>
                                 </li>
                             ))}
                         </ul>
@@ -225,17 +245,17 @@ function StripeFormComponent() {
                         {/* Summary */}
                         <div className="flex justify-between text-sm">
                             <span>Subtotal</span>
-                            <span>₹{calculateSubtotal()}</span>
+                            <span>{formatAmount(calculateSubtotal())}</span>
                         </div>
                         {data.discount > 0 && (
                             <div className="flex justify-between text-sm text-green-600">
                                 <span>Discount ({data.coupon})</span>
-                                <span>- ₹{data.discount}</span>
+                                <span>- {formatAmount(data.discount)}</span>
                             </div>
                         )}
                         <div className="flex justify-between font-semibold mt-2">
                             <span>Total</span>
-                            <span>₹{calculateTotal()}</span>
+                            <span>{formatAmount(calculateTotal())}</span>
                         </div>
                     </div>
                 </div>

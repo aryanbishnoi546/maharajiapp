@@ -40,4 +40,23 @@ return [
         'client_secret' => env('ZOOM_CLIENT_SECRET'),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+
+    'paypal' => [
+        'base_url' => env('PAYPAL_API_URL', 'https://api-m.paypal.com'),
+        'client_id' => env('PAYPAL_SANDBOX_CLIENT_ID'),
+        'client_secret' => env('PAYPAL_SANDBOX_CLIENT_SECRET'),
+    ],
+
+    'slice' => [
+        'key' => env('SLICE_API_KEY'),
+        'secret' => env('SLICE_API_SECRET'),
+        'base_url' => env('SLICE_BASE_URL', 'https://api.slice.dev/v1'),
+        'checkout_url' => env('SLICE_CHECKOUT_URL', 'https://pay.slice.dev/checkout'),
+        'webhook_secret' => env('SLICE_WEBHOOK_SECRET'),
+    ],
+
 ];

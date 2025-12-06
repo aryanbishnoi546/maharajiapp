@@ -1,12 +1,14 @@
 import React from 'react';
 import AuthLayout from '@/Layouts/UserLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { formatCurrency } from '@/utils/currency';
 
 export default function Index({ products, categories, auth }) {
     const [data, setData] = React.useState({
         category_id: '',
         subcategory_id: '',
     });
+    const { market } = usePage().props;
 
     function handleFilter(e) {
         const newData = { ...data, [e.target.name]: e.target.value };
@@ -78,7 +80,7 @@ export default function Index({ products, categories, auth }) {
                                         )}
                                     </td>
                                     <td className="p-3 border">{product.name}</td>
-                                    <td className="p-3 border">₹{product.price}</td>
+                                    <td className="p-3 border">{formatCurrency(product.price, market)}</td>
                                     <td className="p-3 border">{product.category}</td>
                                     <td className="p-3 border">{product.user?.name}</td>
                                     <td className="p-3 border space-x-2">

@@ -6,6 +6,7 @@ export default function EditProduct({ product, categories = [], onClose }) {
     const { data, setData, put, processing, errors } = useForm({
         name: product.name || '',
         price: product.price || '',
+        discount_price: product.discount_price || '',
         description: product.description || '',
         category_id: product.category_id || '',
         subcategory_id: product.subcategory_id || '',
@@ -25,6 +26,7 @@ export default function EditProduct({ product, categories = [], onClose }) {
         formData.append('_method', 'put');
         formData.append('name', data.name);
         formData.append('price', data.price);
+        formData.append('discount_price', data.discount_price || '');
         formData.append('description', data.description);
         formData.append('category_id', data.category_id);
         formData.append('subcategory_id', data.subcategory_id);
@@ -68,6 +70,21 @@ export default function EditProduct({ product, categories = [], onClose }) {
                         onChange={(e) => setData('price', e.target.value)}
                     />
                     {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
+                </div>
+
+                <div className="mb-4">
+                    <label className="block font-semibold">Discount (%)</label>
+                    <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        step="0.01"
+                        className="border rounded w-full p-2"
+                        value={data.discount_price}
+                        onChange={(e) => setData('discount_price', e.target.value)}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Set percentage discount. Leave blank for none.</p>
+                    {errors.discount_price && <p className="text-red-500 text-sm">{errors.discount_price}</p>}
                 </div>
 
                 <div className="mb-4">

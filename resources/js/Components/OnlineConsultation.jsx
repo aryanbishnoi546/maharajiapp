@@ -1,19 +1,26 @@
-import { Link } from "@inertiajs/react";
-import React from "react";
+import { Link, usePage } from "@inertiajs/react";
+import React, { useState } from "react";
+import { formatCurrency } from "@/utils/currency";
 
 const OnlineConsultationContent = () => {
+  const { market } = usePage().props;
+  const [expandedCard, setExpandedCard] = useState(null);
   const consultations = [
     {
       title: "Video Consultation",
       desc: "Personalized Ayurveda through Live Video Guidance.",
-      price: "$55",
+      price: 55,
       img: "https://static.wixstatic.com/media/b4cfae_6674c6e7350f43b2a162ad0339bc1868~mv2.jpg/v1/fill/w_536,h_540,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_auto/b4cfae_6674c6e7350f43b2a162ad0339bc1868~mv2.jpg",
+      longDesc:
+        "A 30-minute HD consultation that includes lifestyle assessment, herbal protocol, and after-call notes sent to your inbox within 2 hours.",
     },
     {
       title: "Audio Consultation",
       desc: "Ayurvedic Guidance Tailored to Your Unique Well-being",
-      price: "$40",
+      price: 40,
       img: "https://static.wixstatic.com/media/b4cfae_f59df166efd84bb89761b2494d5e253a~mv2.jpg/v1/fill/w_536,h_540,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_auto/b4cfae_f59df166efd84bb89761b2494d5e253a~mv2.jpg",
+      longDesc:
+        "A voice-first touchpoint perfect for follow-ups. Receive a personalized action plan and medicine list directly in your dashboard.",
     },
   ];
 
@@ -43,14 +50,21 @@ const OnlineConsultationContent = () => {
                 />
                 <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-300 mb-2">{item.desc}</p>
-                <Link
-                  href="#"
+                {expandedCard === idx && (
+                  <p className="text-sm text-gray-200/80 mb-3 transition-all">
+                    {item.longDesc}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setExpandedCard(expandedCard === idx ? null : idx)}
                   className="text-sm underline text-gray-200 hover:text-white"
+                  aria-expanded={expandedCard === idx}
                 >
-                  Read More
-                </Link>
+                  {expandedCard === idx ? 'Hide details' : 'Read More'}
+                </button>
                 <hr className="my-4 border-gray-500" />
-                <p className="mb-4">{item.price}</p>
+                <p className="mb-4">{formatCurrency(item.price, market)}</p>
                 <Link href="/booking" className="bg-[#f4cfc4] text-[#3e4236] px-5 py-2 rounded-full hover:bg-white transition">
                   Book Now
                 </Link>

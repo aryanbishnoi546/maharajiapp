@@ -1,8 +1,10 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import AddToCartButton from './AddToCartButton';
+import { formatCurrency } from '@/utils/currency';
 
 export default function Products({ products }) {
     const productList = products?.data || [];
+    const { market } = usePage().props;
 
     return (
         <div className="bg-white py-16 px-4 sm:px-6 lg:px-8">
@@ -33,7 +35,7 @@ export default function Products({ products }) {
                                     <div className="p-4">
                                         <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name || 'Unnamed Product'}</h3>
                                         <p className="mt-1 text-xl font-bold text-green-700">
-                                            {product.price ? `$${product.price}` : 'N/A'}
+                                            {product.price ? formatCurrency(product.price, market) : 'N/A'}
                                         </p>
                                     </div>
                                 </Link>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { usePage, router } from '@inertiajs/react';
 import UserLayout from '@/Layouts/UserLayout';
+import { formatCurrency } from '@/utils/currency';
 
 export default function Cart() {
-    const { cartItems } = usePage().props;
+    const { cartItems, market } = usePage().props;
 
     const [selectedItems, setSelectedItems] = useState([]);
 
@@ -39,6 +40,10 @@ export default function Cart() {
     };
 
     const getTotal = () => {
+        if (!Array.isArray(cartItems)) {
+            return 0;
+        }
+
         return cartItems.reduce((total, item) => {
             return total + item.price * item.quantity;
         }, 0);
@@ -89,7 +94,7 @@ export default function Cart() {
                                 />
                                 <div className="ml-4 flex-1">
                                     <h2 className="text-lg font-semibold">{item.name}</h2>
-                                    <p className="text-gray-600">Price:  ${item.price}</p>
+                                    <p className="text-gray-600">Price:  {formatCurrency(item.price, market)}</p>
                                     <div className="flex items-center gap-2 mt-2">
                                         <button
                                             onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
@@ -111,7 +116,7 @@ export default function Cart() {
                                             +
                                         </button>
                                     </div>
-                                    <p className="text-sm mt-1 text-gray-500">Item Total:  ${item.price * item.quantity}</p>
+                                    <p className="text-sm mt-1 text-gray-500">Item Total:  {formatCurrency(item.price * item.quantity, market)}</p>
                                 </div>
                                 <button
                                     onClick={() => handleRemove(item.id)}
@@ -123,7 +128,7 @@ export default function Cart() {
                         ))}
 
                         <div className="flex justify-between items-center mt-6">
-                            <h2 className="text-xl font-bold">Total:  ${getTotal()}</h2>
+                            <h2 className="text-xl font-bold">Total:  {formatCurrency(getTotal(), market)}</h2>
                             <div className="flex gap-4">
                                 <button
                                     onClick={handleClear}

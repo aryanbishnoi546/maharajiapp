@@ -56,21 +56,43 @@ export default function WhyAyurveda() {
             </section>
 
             {/* Discover Plans CTA Section */}
-            <section
-                className="text-center text-[#2f362b] px-6 py-20 bg-fixed bg-cover bg-center"
-                style={{ backgroundImage: "url('https://static.wixstatic.com/media/c837a6_ca3acf50e83e4cd78534cc34b8339ae3~mv2.png/v1/fill/w_2001,h_436,al_c,q_90,enc_avif,quality_auto/c837a6_ca3acf50e83e4cd78534cc34b8339ae3~mv2.png')" }} // Replace with your curve BG path
-            >
-                <p className="text-lg font-semibold max-w-3xl mx-auto">
-                    Embark on a transformative journey at <span className="text-black font-bold">Maharaji Ji Healthcare</span>,
-                    where tradition meets technology, and your well-being takes center stage.
-                </p>
-                <h3 className="text-2xl md:text-3xl font-medium mt-6 mb-8">
-                    Your Path to Holistic Wellness Starts Here!
-                </h3>
-                <Link href={"/book-online"} className="bg-[#4e554a] text-white px-8 py-4 rounded-full text-lg hover:bg-[#3d433a] transition">
-                    Discover Plans
-                </Link>
+            <section className="relative overflow-hidden py-16 md:py-24">
+                {/* Background image */}
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-fixed"
+                    style={{
+                        backgroundImage:
+                            "url('https://static.wixstatic.com/media/c837a6_ca3acf50e83e4cd78534cc34b8339ae3~mv2.png/v1/fill/w_2001,h_436,al_c,q_90,enc_avif,quality_auto/c837a6_ca3acf50e83e4cd78534cc34b8339ae3~mv2.png')",
+                    }}
+                />
+
+                {/* Dark overlay for readability */}
+                <div className="absolute inset-0 bg-black/60" />
+
+                {/* Content */}
+                <div className="relative max-w-4xl mx-auto px-6 text-center text-white">
+                    <p className="text-base md:text-lg font-medium leading-relaxed">
+                        Embark on a transformative journey at{" "}
+                        <span className="font-semibold">
+                            Maharaji Ji Healthcare
+                        </span>
+                        , where tradition meets technology, and your well-being takes center
+                        stage.
+                    </p>
+
+                    <h3 className="mt-6 mb-8 text-2xl md:text-3xl font-semibold">
+                        Your Path to Holistic Wellness Starts Here.
+                    </h3>
+
+                    <Link
+                        href="/book-online"
+                        className="inline-flex items-center justify-center rounded-full px-8 py-3 text-base md:text-lg font-medium bg-[#4e554a] hover:bg-[#3d433a] transition-colors shadow-lg"
+                    >
+                        Discover Plans
+                    </Link>
+                </div>
             </section>
+
         </>
     );
 }
